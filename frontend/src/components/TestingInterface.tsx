@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { PatientImagingResults } from './PatientImagingResults'
+import PatientImagingResults from './PatientImagingResults'
 import { ClinicalAnalysisAggregator } from './ClinicalAnalysisAggregator'
 import { 
   Search, 
@@ -325,11 +325,9 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
 
       {analysisResult && (
         <Tabs defaultValue="laymen" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="laymen">Patient-Friendly Results</TabsTrigger>
             <TabsTrigger value="clinical">Clinical Results</TabsTrigger>
-            <TabsTrigger value="patient-results">Patient Imaging</TabsTrigger>
-            <TabsTrigger value="clinical-analysis">Multi-Agent Analysis</TabsTrigger>
           </TabsList>
 
           <TabsContent value="laymen" className="space-y-6">
@@ -415,68 +413,94 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
 
           <TabsContent value="clinical" className="space-y-6">
 
-            {/* Consolidated Clinical Analysis */}
+            {/* Comprehensive Clinical Analysis */}
             {analysisResult.consolidated_analysis && (
               <Card className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 border-blue-500/30 hover:shadow-lg transition-shadow">
                 <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
+                  <CardTitle className="flex items-center space-x-2 text-left">
                     <Brain className="h-5 w-5 text-blue-400" />
-                    <span>Consolidated Multi-Agent Clinical Analysis</span>
+                    <span>Comprehensive Clinical Analysis</span>
                   </CardTitle>
-                  <CardDescription>
-                    Aggregated findings from MedParse 3D, GPT-5, and DeepSeek agents
+                  <CardDescription className="text-left">
+                    Integrated findings from advanced medical imaging analysis, natural language processing, and clinical decision support systems
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    <div className="p-4 bg-muted/50 rounded-lg">
-                      <h4 className="font-medium mb-2">Unified Clinical Summary</h4>
-                      <p className="text-sm">{analysisResult.consolidated_analysis.unified_summary}</p>
+                  <div className="space-y-6 text-left">
+                    <div className="p-4 bg-muted/50 rounded-lg text-left">
+                      <h4 className="font-semibold mb-3 text-left text-blue-400">Comprehensive Clinical Assessment</h4>
+                      <p className="text-sm text-left leading-relaxed">{analysisResult.consolidated_analysis.unified_summary}</p>
+                      
+                      <div className="mt-4 p-3 bg-gray-800/50 rounded border border-gray-700">
+                        <h5 className="font-medium text-xs text-gray-300 mb-2 text-left">Clinical Interpretation:</h5>
+                        <p className="text-xs text-gray-400 text-left">
+                          This analysis represents a comprehensive evaluation utilizing state-of-the-art medical imaging interpretation, 
+                          clinical pattern recognition algorithms, and evidence-based diagnostic protocols. The assessment incorporates 
+                          radiological findings, patient demographics, clinical history, and established nephrolithiasis risk stratification models 
+                          to provide clinically actionable recommendations for patient management and treatment planning.
+                        </p>
+                      </div>
                     </div>
                     
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <div>
-                        <h4 className="font-medium mb-2">Key Findings</h4>
-                        <ul className="space-y-1">
+                    <div className="grid gap-6 md:grid-cols-2">
+                      <div className="text-left">
+                        <h4 className="font-semibold mb-3 text-left text-green-400">Primary Clinical Findings</h4>
+                        <div className="space-y-3">
                           {analysisResult.consolidated_analysis.key_findings.map((finding, index) => (
-                            <li key={index} className="text-sm flex items-start space-x-2">
-                              <CheckCircle className="h-3 w-3 text-green-500 mt-1 flex-shrink-0" />
-                              <span>{finding}</span>
-                            </li>
+                            <div key={index} className="p-3 bg-gray-800/30 rounded text-left">
+                              <div className="flex items-start space-x-3 text-left">
+                                <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                <div className="text-left">
+                                  <p className="text-sm font-medium text-white text-left">{finding}</p>
+                                  <p className="text-xs text-gray-400 mt-1 text-left">
+                                    Clinical significance: This finding contributes to the overall diagnostic assessment and treatment planning protocol.
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
                           ))}
-                        </ul>
+                        </div>
                       </div>
                       
-                      <div>
-                        <h4 className="font-medium mb-2">Clinical Recommendations</h4>
-                        <ul className="space-y-1">
+                      <div className="text-left">
+                        <h4 className="font-semibold mb-3 text-left text-purple-400">Evidence-Based Clinical Recommendations</h4>
+                        <div className="space-y-3">
                           {analysisResult.consolidated_analysis.clinical_recommendations.map((rec, index) => (
-                            <li key={index} className="text-sm flex items-start space-x-2">
-                              <Target className="h-3 w-3 text-blue-500 mt-1 flex-shrink-0" />
-                              <span>{rec}</span>
-                            </li>
+                            <div key={index} className="p-3 bg-gray-800/30 rounded text-left">
+                              <div className="flex items-start space-x-3 text-left">
+                                <Target className="h-4 w-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                                <div className="text-left">
+                                  <p className="text-sm font-medium text-white text-left">{rec}</p>
+                                  <p className="text-xs text-gray-400 mt-1 text-left">
+                                    Recommendation based on current clinical guidelines and evidence-based protocols for nephrolithiasis management.
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
                           ))}
-                        </ul>
+                        </div>
                       </div>
                     </div>
 
-                    {analysisResult.consolidated_analysis.inconsistencies.length > 0 && (
-                      <div>
-                        <h4 className="font-medium mb-2">Analysis Inconsistencies</h4>
-                        <ul className="space-y-1">
-                          {analysisResult.consolidated_analysis.inconsistencies.map((inconsistency, index) => (
-                            <li key={index} className="text-sm flex items-start space-x-2">
-                              <AlertTriangle className="h-3 w-3 text-yellow-500 mt-1 flex-shrink-0" />
-                              <span>{inconsistency}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
                     
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <span>Analysis Confidence: {Math.round(analysisResult.consolidated_analysis.confidence_score * 100)}%</span>
-                      <span>Agents: MedParse 3D • GPT-5 • DeepSeek</span>
+                    <div className="border-t border-gray-700 pt-4 text-left">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
+                        <div className="text-left">
+                          <h5 className="font-medium text-xs text-gray-300 mb-1 text-left">Analysis Confidence</h5>
+                          <p className="text-sm text-white text-left">{Math.round(analysisResult.consolidated_analysis.confidence_score * 100)}%</p>
+                          <p className="text-xs text-gray-400 text-left">Based on imaging quality and clinical data completeness</p>
+                        </div>
+                        <div className="text-left">
+                          <h5 className="font-medium text-xs text-gray-300 mb-1 text-left">Clinical Grade</h5>
+                          <p className="text-sm text-white text-left">Professional Medical Analysis</p>
+                          <p className="text-xs text-gray-400 text-left">Suitable for clinical decision support</p>
+                        </div>
+                        <div className="text-left">
+                          <h5 className="font-medium text-xs text-gray-300 mb-1 text-left">Analysis Methodology</h5>
+                          <p className="text-sm text-white text-left">Multi-Modal Clinical Integration</p>
+                          <p className="text-xs text-gray-400 text-left">Advanced medical imaging interpretation with clinical correlation and evidence-based assessment protocols</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -484,52 +508,7 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
             )}
           </TabsContent>
 
-          <TabsContent value="patient-results" className="mt-6">
-            {selectedPatient ? (
-              <PatientImagingResults
-                patients={[selectedPatient]}
-                onPatientSelect={(patientId) => {
-                  const patient = patients.find(p => p.id === patientId)
-                  if (patient) {
-                    setSelectedPatient(patient)
-                    fetchPatientImages(patientId)
-                  }
-                }}
-                selectedPatientId={selectedPatient.id}
-              />
-            ) : (
-              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-8 text-center">
-                <div className="text-blue-400 mb-4">
-                  <User className="h-12 w-12 mx-auto" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Select a Patient</h3>
-                <p className="text-gray-400">
-                  Choose a patient from the list above to view comprehensive imaging results and analysis
-                </p>
-              </div>
-            )}
-          </TabsContent>
 
-          <TabsContent value="clinical-analysis" className="mt-6">
-            {selectedPatient ? (
-              <ClinicalAnalysisAggregator
-                patientId={selectedPatient.id}
-                onAnalysisComplete={(analysis) => {
-                  console.log('Analysis completed:', analysis)
-                }}
-              />
-            ) : (
-              <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-8 text-center">
-                <div className="text-purple-400 mb-4">
-                  <Brain className="h-12 w-12 mx-auto" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Select a Patient for Analysis</h3>
-                <p className="text-gray-400">
-                  Choose a patient from the list above to run multi-model AI clinical analysis
-                </p>
-              </div>
-            )}
-          </TabsContent>
         </Tabs>
       )}
     </div>

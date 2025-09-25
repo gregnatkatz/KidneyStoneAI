@@ -18,7 +18,7 @@ import {
 } from 'lucide-react'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { VoiceEnabledImageDisplay } from './VoiceEnabledImageDisplay'
-import { PatientImagingResults } from './PatientImagingResults'
+import PatientImagingResults from './PatientImagingResults'
 import { apiConfig, apiCall } from '@/config/api'
 
 
@@ -107,17 +107,39 @@ export function EMRData({ token }: EMRDataProps) {
   // REM: Enhance patients with imaging data and risk assessment
   useEffect(() => {
     if (patients.length > 0) {
-      const enhanced = patients.map(patient => ({
-        ...patient,
-        age: calculateAge(patient.date_of_birth),
-        riskLevel: generateRiskLevel(),
-        riskScore: {
-          stones: Math.floor(Math.random() * 80) + 20,
-          recurrence: Math.floor(Math.random() * 60) + 15
-        },
-        imaging: []
-      }))
-      setEnhancedPatients(enhanced)
+      const enhancePatients = async () => {
+        const enhanced = await Promise.all(patients.map(async (patient) => {
+          try {
+            const imagingRes = await apiCall(`${apiConfig.endpoints.patients}/${patient.id}/imaging`)
+            const imagingData = await imagingRes.json()
+            
+            return {
+              ...patient,
+              age: calculateAge(patient.date_of_birth),
+              riskLevel: generateRiskLevel(),
+              riskScore: {
+                stones: Math.floor(Math.random() * 80) + 20,
+                recurrence: Math.floor(Math.random() * 60) + 15
+              },
+              imaging: imagingData.imaging_studies || []
+            }
+          } catch (error) {
+            console.error(`Failed to fetch imaging for patient ${patient.id}:`, error)
+            return {
+              ...patient,
+              age: calculateAge(patient.date_of_birth),
+              riskLevel: generateRiskLevel(),
+              riskScore: {
+                stones: Math.floor(Math.random() * 80) + 20,
+                recurrence: Math.floor(Math.random() * 60) + 15
+              },
+              imaging: []
+            }
+          }
+        }))
+        setEnhancedPatients(enhanced)
+      }
+      enhancePatients()
     }
   }, [patients])
 
@@ -137,16 +159,20 @@ export function EMRData({ token }: EMRDataProps) {
     try {
       const [testsRes, imagesRes] = await Promise.all([
         apiCall(`${apiConfig.endpoints.patients}/${patientId}/tests`),
-        apiCall(`${apiConfig.endpoints.patients}/${patientId}/images`)
+        apiCall(`${apiConfig.endpoints.patients}/${patientId}/imaging`)
       ])
 
       const tests = await testsRes.json()
       const images = await imagesRes.json()
 
       setPatientTests(tests)
-      setPatientImages(images)
+      
+      const processedImages = images.imaging_studies || [];
+      
+      setPatientImages(processedImages)
     } catch (error) {
       console.error('Failed to fetch patient details:', error)
+      setPatientImages([])
     }
   }
 
@@ -282,10 +308,9 @@ export function EMRData({ token }: EMRDataProps) {
       <div className="md:col-span-2">
         {selectedPatient ? (
           <Tabs defaultValue="demographics" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="demographics">Demographics</TabsTrigger>
               <TabsTrigger value="tests">Medical Tests</TabsTrigger>
-              <TabsTrigger value="imaging">Medical Imaging</TabsTrigger>
               <TabsTrigger value="enhanced-imaging">Enhanced Imaging Results</TabsTrigger>
             </TabsList>
 
@@ -497,20 +522,25 @@ export function EMRData({ token }: EMRDataProps) {
             </TabsContent>
 
             <TabsContent value="enhanced-imaging" className="space-y-4">
-              {enhancedPatients.length > 0 ? (
+              {enhancedPatients.length > 0 && selectedPatient ? (
                 <PatientImagingResults
                   patients={enhancedPatients}
                   onPatientSelect={handlePatientSelectForImaging}
-                  selectedPatientId={selectedPatient?.id}
+                  selectedPatientId={selectedPatient.id}
                 />
               ) : (
                 <Card className="bg-blue-500/10 border border-blue-500/20">
                   <CardContent className="flex items-center justify-center h-96">
-                    <div className="text-center text-muted-foreground">
-                      <ImageIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <h3 className="text-xl font-semibold text-white mb-2">Loading Enhanced Imaging Results</h3>
-                      <p className="text-gray-400">
-                        Preparing comprehensive patient imaging analysis system...
+                    <div className="text-left text-muted-foreground">
+                      <ImageIcon className="h-12 w-12 mb-4 opacity-50" />
+                      <h3 className="text-xl font-semibold text-white mb-2 text-left">
+                        {selectedPatient ? 'Loading Enhanced Imaging Results' : 'No Patient Selected'}
+                      </h3>
+                      <p className="text-gray-400 text-left">
+                        {selectedPatient 
+                          ? 'Preparing comprehensive patient imaging analysis system...'
+                          : 'Please select a patient from the directory to view their enhanced imaging results.'
+                        }
                       </p>
                     </div>
                   </CardContent>

@@ -140,10 +140,10 @@ export function Dashboard({ token }: DashboardProps) {
         ],
         clinicalStats: {
           conditionDistribution: {
-            normal: Math.floor(patients.length * 0.25),
-            cyst: Math.floor(patients.length * 0.25),
-            tumor: Math.floor(patients.length * 0.25),
-            stone: Math.floor(patients.length * 0.25)
+            normal: Math.floor(patients.length * 0.60),
+            stone: Math.floor(patients.length * 0.25),
+            cyst: Math.floor(patients.length * 0.10),
+            tumor: Math.floor(patients.length * 0.05)
           },
           riskLevels: {
             low: Math.floor(patients.length * 0.4),

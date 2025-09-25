@@ -55,12 +55,12 @@ impl Database {
     }
     
     pub fn get_patient_condition_type(&self, patient_id: Uuid) -> String {
-        let hash = patient_id.as_u128() % 4;
+        let hash = patient_id.as_u128() % 100;
         match hash {
-            0 => "normal".to_string(),
-            1 => "cyst".to_string(),
-            2 => "tumor".to_string(),
-            _ => "stone".to_string(),
+            0..=59 => "normal".to_string(),
+            60..=84 => "stone".to_string(),
+            85..=94 => "cyst".to_string(),
+            _ => "tumor".to_string(),
         }
     }
 

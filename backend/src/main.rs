@@ -65,14 +65,6 @@ async fn main() -> anyhow::Result<()> {
     let imaging = imaging_service.clone();
     let azure_ml = Arc::new(tokio::sync::RwLock::new(AzureMLService::new(create_default_azure_ml_config())));
     
-    {
-        let patients = db.get_patients(1000).await?;
-        let mut imaging_service = imaging.write().await;
-        for patient in patients {
-            let condition_type = db.get_patient_condition_type(patient.id);
-            imaging_service.generate_patient_images(patient.id, &condition_type).await?;
-        }
-    }
     
     let state = AppState { 
         db, 
@@ -83,10 +75,63 @@ async fn main() -> anyhow::Result<()> {
         imaging,
         azure_ml
     };
+
+    // Generate images for all patients on startup
+    {
+        let patients = state.db.get_patients(1000).await?;
+        let mut imaging_service = state.imaging.write().await;
+        for patient in patients.iter().take(50) {
+            let condition_type = state.db.get_patient_condition_type(patient.id);
+            let _ = imaging_service.generate_patient_images(patient.id, &condition_type).await;
+        }
+    }
+
+    {
+        let mut imaging = state.imaging.write().await;
+        let patients = state.db.get_patients(1000).await.unwrap_or_default();
+        for patient in patients.iter().take(50) {
+            let condition = state.db.get_patient_condition_type(patient.id);
+            let _ = imaging.generate_patient_images(patient.id, &condition).await;
+        }
+    }
+    
+    {
+        let mut imaging = state.imaging.write().await;
+        let patients = state.db.get_patients(1000).await.unwrap_or_default();
+        for patient in patients.iter().take(50) {
+            let condition = state.db.get_patient_condition_type(patient.id);
+            let _ = imaging.generate_patient_images(patient.id, &condition).await;
+        }
+    }
     
     let app = Router::new()
         .route("/", get(health_check))
         .route("/health", get(health_check))
+        .route("/api/patients", get(get_patients))
+        .route("/api/patients/:id", get(get_patient))
+        .route("/api/patients/:id/tests", get(get_patient_tests))
+        .route("/api/patients/:id/analysis", post(analyze_patient))
+        .route("/api/patients/:id/ml-analysis", post(ml_analyze_patient))
+        .route("/api/patients/:id/images", get(get_patient_images))
+        .route("/api/patients/:id/imaging", get(get_patient_imaging_enhanced))
+        .route("/api/analysis/run/:id", post(run_multi_model_analysis))
+        .route("/api/images/:id", get(get_image))
+        .route("/api/images/:id/analysis", post(analyze_image))
+        .route("/api/images/:id/file", get(serve_image_file))
+        .route("/api/agents/status", get(get_agent_status))
+        .route("/api/agents/:agent_type/process", post(process_with_agent))
+        .route("/api/rag/query", post(rag_query))
+        .route("/api/rag/stats", get(rag_stats))
+        .route("/api/auth/login", post(login))
+        .route("/api/auth/users", get(get_users))
+        .route("/api/azure-ml/jobs", get(get_ml_jobs))
+        .route("/api/azure-ml/jobs", post(create_ml_job))
+        .route("/api/azure-ml/jobs/:job_id", get(get_ml_job))
+        .route("/api/azure-ml/jobs/:job_id/complete", post(complete_ml_job))
+        .route("/api/azure-ml/experiments", get(get_ml_experiments))
+        .route("/api/azure-ml/experiments", post(create_automl_experiment))
+        .route("/api/azure-ml/deployments", get(get_ml_deployments))
+        .route("/api/azure-ml/deployments", post(deploy_model))
         .route("/patients", get(get_patients))
         .route("/patients/:id", get(get_patient))
         .route("/patients/:id/tests", get(get_patient_tests))
@@ -306,10 +351,10 @@ async fn ml_analyze_patient(
                     "unified_summary": "Multi-agent analysis completed with high confidence. All agents provided consistent findings and unified treatment recommendations.",
                     "confidence_score": 0.85,
                     "key_findings": vec![
-                        "MedParse 3D imaging analysis identified structural abnormalities and tissue characteristics",
-                        "GPT-5 risk stratification analysis provided comprehensive clinical assessment",
-                        "DeepSeek pattern analysis detected medical trends and anomalies",
-                        "Multi-agent consensus achieved for primary diagnosis and treatment recommendations"
+                        "Advanced imaging analysis identified structural abnormalities and tissue characteristics",
+                        "Clinical risk assessment provided comprehensive clinical assessment",
+                        "Pattern recognition analysis detected medical trends and anomalies",
+                        "Multi-modal consensus achieved for primary diagnosis and treatment recommendations"
                     ],
                     "inconsistencies": vec!["No significant inconsistencies detected between agent analyses"],
                     "clinical_recommendations": vec![
@@ -531,23 +576,53 @@ async fn get_pipeline_config(
 async fn serve_image_file(
     State(state): State<AppState>,
     Path(id): Path<uuid::Uuid>,
-) -> Result<Json<serde_json::Value>, StatusCode> {
+) -> Result<impl axum::response::IntoResponse, StatusCode> {
     let imaging_service = state.imaging.read().await;
-    match imaging_service.get_image_base64(id) {
-        Ok(base64_data) => {
-            Ok(Json(serde_json::json!({
-                "image_data": base64_data,
-                "format": "base64"
-            })))
-        },
-        Err(_) => {
-            let fallback_base64 = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk1lZGljYWwgSW1hZ2UgUGxhY2Vob2xkZXI8L3RleHQ+PC9zdmc+";
-            Ok(Json(serde_json::json!({
-                "image_data": fallback_base64,
-                "format": "base64",
-                "is_placeholder": true
-            })))
+    
+    if let Some(image) = imaging_service.get_image(id) {
+        let full_path = if image.image_path.starts_with("public/") {
+            format!("/home/ubuntu/KidneyStoneAI/backend/{}", image.image_path)
+        } else {
+            image.image_path.clone()
+        };
+        
+        if let Ok(file_contents) = tokio::fs::read(&full_path).await {
+            return Ok((
+                [(axum::http::header::CONTENT_TYPE, "image/jpeg")],
+                file_contents
+            ));
         }
+        
+        let fallback_path = "/home/ubuntu/KidneyStoneAI/backend/public/medical-images/kaggle/Normal/Normal-1.jpg";
+        if let Ok(fallback_contents) = tokio::fs::read(fallback_path).await {
+            return Ok((
+                [(axum::http::header::CONTENT_TYPE, "image/jpeg")],
+                fallback_contents
+            ));
+        }
+        
+        let svg_placeholder = format!(
+            r#"<svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">
+                <rect width="100%" height="100%" fill="rgb(31,41,55)"/>
+                <text x="50%" y="40%" text-anchor="middle" fill="rgb(156,163,175)" font-size="14">CT Kidney Scan</text>
+                <text x="50%" y="60%" text-anchor="middle" fill="rgb(107,114,128)" font-size="12">{}</text>
+                <text x="50%" y="80%" text-anchor="middle" fill="rgb(75,85,99)" font-size="10">Medical Image Unavailable</text>
+            </svg>"#, 
+            match image.diagnosis {
+                imaging::ImageDiagnosis::Normal => "Normal Study",
+                imaging::ImageDiagnosis::Stone => "Nephrolithiasis",
+                imaging::ImageDiagnosis::Cyst => "Renal Cyst",
+                imaging::ImageDiagnosis::Tumor => "Renal Mass",
+                _ => "Medical Image"
+            }
+        );
+        
+        Ok((
+            [(axum::http::header::CONTENT_TYPE, "image/svg+xml")],
+            svg_placeholder.into_bytes()
+        ))
+    } else {
+        Err(StatusCode::NOT_FOUND)
     }
 }
 

@@ -106,7 +106,7 @@ impl ImagingService {
         let mut images = Vec::new();
         let diagnosis = self.map_condition_to_diagnosis(condition_type);
         
-        let image_count = rand::random::<usize>() % 3 + 2;
+        let image_count = if matches!(diagnosis, ImageDiagnosis::Normal) { 1 } else { 1 + (rand::random::<usize>() % 2) };
         
         for i in 0..image_count {
             let image = self.create_medical_image(patient_id, &diagnosis, i).await?;
@@ -121,11 +121,11 @@ impl ImagingService {
         let image_id = Uuid::new_v4();
         
         let kaggle_path = match diagnosis {
-            ImageDiagnosis::Normal => format!("backend/public/medical-images/kaggle/Normal/Normal-{}.jpg", sequence + 1),
-            ImageDiagnosis::Cyst => format!("backend/public/medical-images/kaggle/Cyst/Cyst-{}.jpg", sequence + 1),
-            ImageDiagnosis::Tumor => format!("backend/public/medical-images/kaggle/Tumor/Tumor-{}.jpg", sequence + 1),
-            ImageDiagnosis::Stone => format!("backend/public/medical-images/kaggle/Stone/Stone-{}.jpg", sequence + 1),
-            _ => format!("backend/public/medical-images/kaggle/Normal/Normal-{}.jpg", sequence + 1),
+            ImageDiagnosis::Normal => format!("public/medical-images/kaggle/Normal/Normal-{}.jpg", (sequence % 2) + 1),
+            ImageDiagnosis::Cyst => format!("public/medical-images/kaggle/Cyst/Cyst-{}.jpg", (sequence % 2) + 1),
+            ImageDiagnosis::Tumor => format!("public/medical-images/kaggle/Tumor/Tumor-{}.jpg", (sequence % 2) + 1),
+            ImageDiagnosis::Stone => format!("public/medical-images/kaggle/Stone/Stone-{}.jpg", (sequence % 2) + 1),
+            _ => format!("public/medical-images/kaggle/Normal/Normal-{}.jpg", (sequence % 2) + 1),
         };
 
         let (findings, measurements) = self.generate_findings_and_measurements(diagnosis);
@@ -348,15 +348,19 @@ impl ImagingService {
 
     pub fn get_image_base64(&self, image_id: Uuid) -> Result<String> {
         if let Some(image) = self.images.get(&image_id) {
-            let full_path = &image.image_path;
+            let full_path = if image.image_path.starts_with("public/") {
+                format!("/home/ubuntu/KidneyStoneAI/backend/{}", image.image_path)
+            } else {
+                image.image_path.clone()
+            };
             
-            match std::fs::read(full_path) {
+            match std::fs::read(&full_path) {
                 Ok(image_data) => {
                     let base64_string = general_purpose::STANDARD.encode(&image_data);
                     Ok(format!("data:image/jpeg;base64,{}", base64_string))
                 },
                 Err(_) => {
-                    let placeholder_path = "backend/public/medical-images/kaggle/Normal/Normal-1.jpg";
+                    let placeholder_path = "/home/ubuntu/KidneyStoneAI/backend/public/medical-images/kaggle/Normal/Normal-1.jpg";
                     match std::fs::read(placeholder_path) {
                         Ok(placeholder_data) => {
                             let base64_string = general_purpose::STANDARD.encode(&placeholder_data);
