@@ -1,0 +1,28 @@
+[package]
+name = "kidney-stone-api"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1.35", features = ["full"] }
+axum = "0.6"
+tower = "0.4"
+tower-http = { version = "0.4", features = ["cors", "fs"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+uuid = { version = "1.0", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+reqwest = { version = "0.11", features = ["json"] }
+anyhow = "1.0"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+rand = "0.8"
+fake = { version = "2.9", features = ["derive", "chrono", "uuid"] }
+chroma-rs = "0.1"
+jsonwebtoken = "9.0"
+bcrypt = "0.15"
+azure_core = "0.19"
+azure_identity = "0.19"
+image = "0.24"
+imageproc = "0.23"
+base64 = "0.21"
