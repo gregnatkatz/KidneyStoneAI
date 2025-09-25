@@ -5,24 +5,78 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import PatientImagingResults from './PatientImagingResults'
-import { ClinicalAnalysisAggregator } from './ClinicalAnalysisAggregator'
 import { 
   Search, 
   Brain, 
-  Zap, 
   Target, 
-  TrendingUp, 
-  AlertTriangle, 
   CheckCircle,
   Loader2,
   User,
-  Activity,
   Database
 } from 'lucide-react'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { apiConfig, apiCall } from '@/config/api'
+import { apiCall } from '@/config/api'
+
+// ImageWithLoader component for displaying CT images in Testing Interface (important-comment)
+const ImageWithLoader = ({ imageId, alt, onError, loadImageData }: {
+  imageId: string;
+  alt: string;
+  onError: () => void;
+  loadImageData: (id: string) => Promise<string>;
+}) => {
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const loadImage = async () => {
+      try {
+        setLoading(true);
+        const imageData = await loadImageData(imageId);
+        setImageSrc(imageData);
+      } catch (err) {
+        setError(true);
+        onError();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadImage();
+  }, [imageId, loadImageData, onError]);
+
+  if (loading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+      </div>
+    );
+  }
+
+  if (error || !imageSrc) {
+    return (
+      <div className="w-full h-full flex items-center justify-center text-gray-400">
+        <div className="text-center">
+          <Database className="h-8 w-8 mx-auto mb-2" />
+          <p className="text-sm">CT Scan</p>
+          <p className="text-xs">Medical Image</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={imageSrc}
+      alt={alt}
+      className="w-full h-full object-cover"
+      onError={() => {
+        setError(true);
+        onError();
+      }}
+    />
+  );
+};
 
 interface TestingInterfaceProps {
   token: string
@@ -89,21 +143,12 @@ interface AnalysisResult {
   timestamp: string
 }
 
-interface RAGResponse {
-  query: string
-  synthesized_answer: string
-  confidence_score: number
-  sources: string[]
-}
 
 export function TestingInterface({ token }: TestingInterfaceProps) {
   const [patients, setPatients] = useState<Patient[]>([])
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
-  const [ragQuery, setRagQuery] = useState('')
-  const [ragResponse, setRagResponse] = useState<RAGResponse | null>(null)
   const [loading, setLoading] = useState(false)
-  const [ragLoading, setRagLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
@@ -112,7 +157,7 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
 
   const fetchPatients = async () => {
     try {
-      const response = await apiCall(`${apiConfig.endpoints.patients}?limit=20`)
+      const response = await apiCall(`/api/patients?limit=20`)
       const data = await response.json()
       setPatients(data.map((p: any) => ({
         ...p,
@@ -141,14 +186,17 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
 
     setLoading(true)
     try {
-      const response = await apiCall(`${apiConfig.endpoints.patients}/${selectedPatient.id}/ml-analysis`, {
+      const response = await apiCall(`/api/analysis/run/${selectedPatient.id}`, {
         method: 'POST'
       })
-      const result = await response.json()
-      setAnalysisResult(result)
       
-      // REM: Fetch patient images when analysis is run
-      await fetchPatientImages(selectedPatient.id)
+      if (response.ok) {
+        const result = await response.json()
+        setAnalysisResult(result)
+        
+        // Fetch patient images after analysis completes (important-comment)
+        await fetchPatientImages(selectedPatient.id)
+      }
     } catch (error) {
       console.error('Failed to run analysis:', error)
     } finally {
@@ -156,13 +204,13 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
     }
   }
 
-  // REM: Fetch patient images when selected
+  // REM: Fetch patient images when selected (important-comment)
   const fetchPatientImages = async (patientId: string) => {
     try {
-      const response = await apiCall(`${apiConfig.endpoints.patients}/${patientId}/imaging`)
+      const response = await apiCall(`/api/patients/${patientId}/imaging`)
       if (response.ok) {
         const imagingData = await response.json()
-        // REM: Update patient with imaging data for display
+        // REM: Update patient with imaging data for display (important-comment)
         setSelectedPatient(prev => prev ? {
           ...prev,
           imaging: imagingData.imaging_studies || [],
@@ -175,26 +223,20 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
     }
   }
 
-  const queryRAG = async () => {
-    if (!ragQuery.trim()) return
-
-    setRagLoading(true)
+  // Load image data for CT scans in Testing Interface
+  const loadImageData = async (imageId: string): Promise<string> => {
     try {
-      const response = await apiCall(`${apiConfig.endpoints.rag}/query`, {
-        method: 'POST',
-        body: JSON.stringify({
-          query: ragQuery,
-          max_results: 3
-        })
-      })
-      const result = await response.json()
-      setRagResponse(result)
+      const response = await apiCall(`/api/images/${imageId}/base64`);
+      if (response.ok) {
+        const data = await response.json();
+        return data.image_data;
+      }
+      throw new Error('Failed to load image');
     } catch (error) {
-      console.error('Failed to query RAG:', error)
-    } finally {
-      setRagLoading(false)
+      console.error('Error loading image:', error);
+      throw error;
     }
-  }
+  };
 
   const filteredPatients = patients.filter(patient =>
     `${patient.first_name} ${patient.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -307,15 +349,46 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
           <CardContent>
             {selectedPatient ? (
               <div className="space-y-4">
-                <div className="text-center text-muted-foreground">
-                  CT images for {selectedPatient.first_name} {selectedPatient.last_name} will be displayed here when analysis is run
-                </div>
-                <div className="text-xs text-muted-foreground text-center">
-                  Run Multi-Agent Analysis to view patient's kidney CT scans and comprehensive findings
-                </div>
+                {analysisResult && selectedPatient && selectedPatient.imaging && selectedPatient.imaging.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {selectedPatient.imaging.slice(0, 2).map((study, index) => (
+                      <Card key={`${selectedPatient.id}-${index}`} className="bg-gray-800/50 border-gray-700">
+                        <CardContent className="p-4">
+                          <div className="aspect-square bg-gray-700 rounded mb-3 overflow-hidden">
+                            <ImageWithLoader 
+                              imageId={study.id}
+                              alt={`${study.type} scan for ${selectedPatient.first_name} ${selectedPatient.last_name}`}
+                              onError={() => console.log(`Failed to load image ${study.id}`)}
+                              loadImageData={loadImageData}
+                            />
+                          </div>
+                          <div className="space-y-2 text-left">
+                            <h4 className="font-semibold text-white text-sm text-left">{study.type || "CT Abdomen/Pelvis"}</h4>
+                            <p className="text-gray-400 text-xs text-left">{study.date || new Date().toLocaleDateString()}</p>
+                            <p className="text-xs text-gray-400 text-left">
+                              Clinical findings: {study.findings?.join(', ') || 'Analysis complete'}
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-left text-muted-foreground">
+                    {analysisResult ? 
+                      "No imaging studies available for this patient" : 
+                      `CT images for ${selectedPatient.first_name} ${selectedPatient.last_name} will be displayed here when analysis is run`
+                    }
+                  </div>
+                )}
+                {!analysisResult && (
+                  <div className="text-xs text-muted-foreground text-left">
+                    Run Multi-Agent Analysis to view patient's kidney CT scans and comprehensive findings
+                  </div>
+                )}
               </div>
             ) : (
-              <div className="text-center text-muted-foreground py-8">
+              <div className="text-left text-muted-foreground py-8">
                 Select a patient to view their CT imaging studies
               </div>
             )}
@@ -343,14 +416,14 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-center">
-                  <div className={`text-4xl font-bold ${getRiskColor(analysisResult.risk_prediction.risk_level)}`}>
-                    {analysisResult.risk_prediction.risk_level}
+                  <div className={`text-4xl font-bold ${analysisResult?.risk_prediction?.risk_level ? getRiskColor(analysisResult.risk_prediction.risk_level) : 'text-gray-400'}`}>
+                    {analysisResult?.risk_prediction?.risk_level || 'Analyzing...'}
                   </div>
                   <div className="text-sm text-muted-foreground mt-1">
                     Overall Risk Level
                   </div>
                   <Progress 
-                    value={analysisResult.risk_prediction.overall_risk_score * 100} 
+                    value={analysisResult?.risk_prediction?.overall_risk_score ? analysisResult.risk_prediction.overall_risk_score * 100 : 0} 
                     className="mt-4"
                   />
                 </div>
@@ -361,7 +434,7 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
                       Chance of Developing Stones
                     </div>
                     <div className="text-2xl font-bold text-blue-600">
-                      {Math.round(analysisResult.risk_prediction.stone_formation_probability * 100)}%
+                      {analysisResult?.risk_prediction?.stone_formation_probability ? Math.round(analysisResult.risk_prediction.stone_formation_probability * 100) : 0}%
                     </div>
                   </div>
                   
@@ -370,7 +443,7 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
                       Risk of Recurrence
                     </div>
                     <div className="text-2xl font-bold text-orange-600">
-                      {Math.round(analysisResult.risk_prediction.recurrence_risk * 100)}%
+                      {analysisResult?.risk_prediction?.recurrence_risk ? Math.round(analysisResult.risk_prediction.recurrence_risk * 100) : 0}%
                     </div>
                   </div>
                 </div>
@@ -378,7 +451,7 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
                 <div>
                   <h4 className="font-medium mb-3">What This Means for You:</h4>
                   <div className="space-y-2">
-                    {analysisResult.risk_prediction.recommendations.map((rec, index) => (
+                    {analysisResult?.risk_prediction?.recommendations?.map((rec, index) => (
                       <div key={index} className="flex items-start space-x-2">
                         <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
                         <span className="text-sm">{rec}</span>
@@ -390,9 +463,9 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
                 <div>
                   <h4 className="font-medium mb-3">Most Likely Stone Type:</h4>
                   <div className="space-y-2">
-                    {analysisResult.composition_prediction.predicted_compositions
-                      .slice(0, 2)
-                      .map((comp, index) => (
+                    {analysisResult?.composition_prediction?.predicted_compositions
+                      ?.slice(0, 2)
+                      ?.map((comp, index) => (
                       <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded">
                         <div>
                           <div className="font-medium">{comp.composition}</div>
@@ -414,7 +487,7 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
           <TabsContent value="clinical" className="space-y-6">
 
             {/* Comprehensive Clinical Analysis */}
-            {analysisResult.consolidated_analysis && (
+            {analysisResult && (analysisResult as any).consolidated_analysis && (
               <Card className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 border-blue-500/30 hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2 text-left">
@@ -429,7 +502,7 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
                   <div className="space-y-6 text-left">
                     <div className="p-4 bg-muted/50 rounded-lg text-left">
                       <h4 className="font-semibold mb-3 text-left text-blue-400">Comprehensive Clinical Assessment</h4>
-                      <p className="text-sm text-left leading-relaxed">{analysisResult.consolidated_analysis.unified_summary}</p>
+                      <p className="text-sm text-left leading-relaxed">{(analysisResult as any).consolidated_analysis.unified_summary}</p>
                       
                       <div className="mt-4 p-3 bg-gray-800/50 rounded border border-gray-700">
                         <h5 className="font-medium text-xs text-gray-300 mb-2 text-left">Clinical Interpretation:</h5>
@@ -446,7 +519,7 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
                       <div className="text-left">
                         <h4 className="font-semibold mb-3 text-left text-green-400">Primary Clinical Findings</h4>
                         <div className="space-y-3">
-                          {analysisResult.consolidated_analysis.key_findings.map((finding, index) => (
+                          {(analysisResult as any).consolidated_analysis.key_findings.map((finding: string, index: number) => (
                             <div key={index} className="p-3 bg-gray-800/30 rounded text-left">
                               <div className="flex items-start space-x-3 text-left">
                                 <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
@@ -465,7 +538,7 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
                       <div className="text-left">
                         <h4 className="font-semibold mb-3 text-left text-purple-400">Evidence-Based Clinical Recommendations</h4>
                         <div className="space-y-3">
-                          {analysisResult.consolidated_analysis.clinical_recommendations.map((rec, index) => (
+                          {(analysisResult as any).consolidated_analysis.clinical_recommendations.map((rec: string, index: number) => (
                             <div key={index} className="p-3 bg-gray-800/30 rounded text-left">
                               <div className="flex items-start space-x-3 text-left">
                                 <Target className="h-4 w-4 text-purple-500 mt-0.5 flex-shrink-0" />
@@ -487,7 +560,7 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
                         <div className="text-left">
                           <h5 className="font-medium text-xs text-gray-300 mb-1 text-left">Analysis Confidence</h5>
-                          <p className="text-sm text-white text-left">{Math.round(analysisResult.consolidated_analysis.confidence_score * 100)}%</p>
+                          <p className="text-sm text-white text-left">{Math.round((analysisResult as any).consolidated_analysis.confidence_score * 100)}%</p>
                           <p className="text-xs text-gray-400 text-left">Based on imaging quality and clinical data completeness</p>
                         </div>
                         <div className="text-left">

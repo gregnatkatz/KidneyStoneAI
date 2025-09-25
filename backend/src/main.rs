@@ -80,28 +80,15 @@ async fn main() -> anyhow::Result<()> {
     {
         let patients = state.db.get_patients(1000).await?;
         let mut imaging_service = state.imaging.write().await;
-        for patient in patients.iter().take(50) {
+        println!("Generating images for {} patients...", patients.len());
+        for (i, patient) in patients.iter().enumerate() {
+            if i % 100 == 0 {
+                println!("Generated images for {} patients...", i);
+            }
             let condition_type = state.db.get_patient_condition_type(patient.id);
             let _ = imaging_service.generate_patient_images(patient.id, &condition_type).await;
         }
-    }
-
-    {
-        let mut imaging = state.imaging.write().await;
-        let patients = state.db.get_patients(1000).await.unwrap_or_default();
-        for patient in patients.iter().take(50) {
-            let condition = state.db.get_patient_condition_type(patient.id);
-            let _ = imaging.generate_patient_images(patient.id, &condition).await;
-        }
-    }
-    
-    {
-        let mut imaging = state.imaging.write().await;
-        let patients = state.db.get_patients(1000).await.unwrap_or_default();
-        for patient in patients.iter().take(50) {
-            let condition = state.db.get_patient_condition_type(patient.id);
-            let _ = imaging.generate_patient_images(patient.id, &condition).await;
-        }
+        println!("Image generation completed for all {} patients!", patients.len());
     }
     
     let app = Router::new()
@@ -116,6 +103,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/patients/:id/imaging", get(get_patient_imaging_enhanced))
         .route("/api/analysis/run/:id", post(run_multi_model_analysis))
         .route("/api/images/:id", get(get_image))
+        .route("/api/images/:id/base64", get(get_image_base64))
         .route("/api/images/:id/analysis", post(analyze_image))
         .route("/api/images/:id/file", get(serve_image_file))
         .route("/api/agents/status", get(get_agent_status))
@@ -404,6 +392,19 @@ async fn get_image(
     match imaging_service.get_image(id) {
         Some(image) => Ok(Json(image.clone())),
         None => Err(StatusCode::NOT_FOUND),
+    }
+}
+
+async fn get_image_base64(
+    State(state): State<AppState>,
+    Path(id): Path<Uuid>,
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    let imaging_service = state.imaging.read().await;
+    match imaging_service.get_image_base64(id) {
+        Ok(base64_data) => Ok(Json(serde_json::json!({
+            "image_data": base64_data
+        }))),
+        Err(_) => Err(StatusCode::NOT_FOUND),
     }
 }
 

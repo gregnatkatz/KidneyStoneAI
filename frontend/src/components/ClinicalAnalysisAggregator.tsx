@@ -122,21 +122,21 @@ export const ClinicalAnalysisAggregator: React.FC<ClinicalAnalysisAggregatorProp
     setError(null);
     
     try {
-      setCurrentModel('MedParse 3D Imaging Analysis');
+      setCurrentModel('Advanced 3D Imaging Analysis');
       setAnalysisProgress(10);
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       setAnalysisProgress(35);
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      setCurrentModel('GPT-5 Clinical Assessment');
+      setCurrentModel('Clinical Assessment & Interpretation');
       setAnalysisProgress(45);
       await new Promise(resolve => setTimeout(resolve, 1200));
       
       setAnalysisProgress(70);
       await new Promise(resolve => setTimeout(resolve, 800));
       
-      setCurrentModel('DeepSeek Pattern Recognition');
+      setCurrentModel('Pattern Recognition & Risk Stratification');
       setAnalysisProgress(80);
       await new Promise(resolve => setTimeout(resolve, 1000));
       
@@ -195,10 +195,10 @@ export const ClinicalAnalysisAggregator: React.FC<ClinicalAnalysisAggregatorProp
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
             <Brain className="h-5 w-5" />
-            Multi-Agent Clinical Analysis
+            Comprehensive Clinical Analysis
           </CardTitle>
           <CardDescription className="text-gray-400">
-            Aggregate results from MedParse, GPT-5, and DeepSeek models for comprehensive clinical assessment
+            Advanced medical imaging analysis with comprehensive clinical assessment and evidence-based recommendations
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -209,7 +209,7 @@ export const ClinicalAnalysisAggregator: React.FC<ClinicalAnalysisAggregatorProp
               size="lg"
             >
               <Brain className="h-4 w-4 mr-2" />
-              Run Multi-Agent Analysis
+              Run Comprehensive Analysis
             </Button>
           )}
           

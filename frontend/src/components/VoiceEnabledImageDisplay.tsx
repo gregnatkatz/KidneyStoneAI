@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
-import { VoiceService } from '../services/voiceService';
+import { voiceService } from '../services/voiceService';
 
 interface VoiceEnabledImageDisplayProps {
   imageId: string;
@@ -23,14 +23,10 @@ export const VoiceEnabledImageDisplay: React.FC<VoiceEnabledImageDisplayProps> =
   const [error, setError] = useState<string | null>(null);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [voiceService, setVoiceService] = useState<VoiceService | null>(null);
+  const [voiceServiceReady, setVoiceServiceReady] = useState<boolean>(false);
 
   useEffect(() => {
-    const config = {
-      subscriptionKey: (import.meta as any).env?.VITE_AZURE_SPEECH_KEY || 'mock-key',
-      region: (import.meta as any).env?.VITE_AZURE_SPEECH_REGION || 'eastus'
-    };
-    setVoiceService(new VoiceService(config));
+    setVoiceServiceReady(voiceService.isVoiceSupported());
   }, []);
 
   useEffect(() => {
@@ -57,21 +53,24 @@ export const VoiceEnabledImageDisplay: React.FC<VoiceEnabledImageDisplayProps> =
   }, [imageId]);
 
   const handleVoiceCommand = async () => {
-    if (!voiceService) return;
+    if (!voiceServiceReady) return;
 
     setIsListening(true);
-    try {
-      const command = await voiceService.recognizeSpeech();
-      await processVoiceCommand(command.toLowerCase());
-    } catch (error) {
-      console.error('Voice recognition error:', error);
-    } finally {
-      setIsListening(false);
-    }
+    
+    voiceService.startListening(
+      (transcript) => {
+        processVoiceCommand(transcript.toLowerCase());
+        setIsListening(false);
+      },
+      (error) => {
+        console.error('Voice recognition error:', error);
+        setIsListening(false);
+      }
+    );
   };
 
-  const processVoiceCommand = async (command: string) => {
-    if (!voiceService) return;
+  const processVoiceCommand = (command: string) => {
+    if (!voiceServiceReady) return;
 
     let responseText = '';
 
@@ -88,20 +87,16 @@ export const VoiceEnabledImageDisplay: React.FC<VoiceEnabledImageDisplayProps> =
       responseText = `This is a ${diagnosis.toLowerCase()} kidney CT scan. Say "describe findings", "read measurements", or "radiologist notes" for specific information.`;
     }
 
-    await speakText(responseText);
+    speakText(responseText);
   };
 
-  const speakText = async (text: string) => {
-    if (!voiceService) return;
+  const speakText = (text: string) => {
+    if (!voiceServiceReady) return;
 
     setIsSpeaking(true);
-    try {
-      await voiceService.synthesizeSpeech(text);
-    } catch (error) {
-      console.error('Speech synthesis error:', error);
-    } finally {
+    voiceService.speak(text, () => {
       setIsSpeaking(false);
-    }
+    });
   };
 
   const speakFindings = () => {
