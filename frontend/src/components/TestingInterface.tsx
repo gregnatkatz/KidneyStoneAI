@@ -6,6 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { PatientImagingResults } from './PatientImagingResults'
+import { ClinicalAnalysisAggregator } from './ClinicalAnalysisAggregator'
 import { 
   Search, 
   Brain, 
@@ -34,6 +36,19 @@ interface Patient {
   age: number
   gender: string
   avatar_url: string
+  riskLevel?: "High" | "Moderate" | "Low"
+  riskScore?: {
+    stones: number
+    recurrence: number
+  }
+  imaging?: Array<{
+    id: string
+    type: string
+    date: string
+    findings: string[]
+    imagePath: string
+    status: "normal" | "abnormal" | "mild"
+  }>
 }
 
 interface AnalysisResult {
@@ -131,10 +146,32 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
       })
       const result = await response.json()
       setAnalysisResult(result)
+      
+      // REM: Fetch patient images when analysis is run
+      await fetchPatientImages(selectedPatient.id)
     } catch (error) {
       console.error('Failed to run analysis:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  // REM: Fetch patient images when selected
+  const fetchPatientImages = async (patientId: string) => {
+    try {
+      const response = await apiCall(`${apiConfig.endpoints.patients}/${patientId}/imaging`)
+      if (response.ok) {
+        const imagingData = await response.json()
+        // REM: Update patient with imaging data for display
+        setSelectedPatient(prev => prev ? {
+          ...prev,
+          imaging: imagingData.imaging_studies || [],
+          riskLevel: prev.riskLevel || "Moderate",
+          riskScore: prev.riskScore || { stones: 45, recurrence: 30 }
+        } : null)
+      }
+    } catch (error) {
+      console.error('Failed to fetch patient images:', error)
     }
   }
 
@@ -206,7 +243,13 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
                     key={patient.id}
                     variant={selectedPatient?.id === patient.id ? "default" : "ghost"}
                     className="w-full justify-start h-auto p-3"
-                    onClick={() => setSelectedPatient(patient)}
+                    onClick={() => {
+                      setSelectedPatient(patient)
+                      // REM: Trigger image loading for selected patient
+                      if (patient.id) {
+                        fetchPatientImages(patient.id)
+                      }
+                    }}
                   >
                     <div className="flex items-center space-x-3 text-left w-full">
                       <Avatar className="h-10 w-10">
@@ -282,9 +325,11 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
 
       {analysisResult && (
         <Tabs defaultValue="laymen" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="laymen">Patient-Friendly Results</TabsTrigger>
             <TabsTrigger value="clinical">Clinical Results</TabsTrigger>
+            <TabsTrigger value="patient-results">Patient Imaging</TabsTrigger>
+            <TabsTrigger value="clinical-analysis">Multi-Agent Analysis</TabsTrigger>
           </TabsList>
 
           <TabsContent value="laymen" className="space-y-6">
@@ -436,6 +481,53 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
                   </div>
                 </CardContent>
               </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="patient-results" className="mt-6">
+            {selectedPatient ? (
+              <PatientImagingResults
+                patients={[selectedPatient]}
+                onPatientSelect={(patientId) => {
+                  const patient = patients.find(p => p.id === patientId)
+                  if (patient) {
+                    setSelectedPatient(patient)
+                    fetchPatientImages(patientId)
+                  }
+                }}
+                selectedPatientId={selectedPatient.id}
+              />
+            ) : (
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-8 text-center">
+                <div className="text-blue-400 mb-4">
+                  <User className="h-12 w-12 mx-auto" />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">Select a Patient</h3>
+                <p className="text-gray-400">
+                  Choose a patient from the list above to view comprehensive imaging results and analysis
+                </p>
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="clinical-analysis" className="mt-6">
+            {selectedPatient ? (
+              <ClinicalAnalysisAggregator
+                patientId={selectedPatient.id}
+                onAnalysisComplete={(analysis) => {
+                  console.log('Analysis completed:', analysis)
+                }}
+              />
+            ) : (
+              <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-8 text-center">
+                <div className="text-purple-400 mb-4">
+                  <Brain className="h-12 w-12 mx-auto" />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">Select a Patient for Analysis</h3>
+                <p className="text-gray-400">
+                  Choose a patient from the list above to run multi-model AI clinical analysis
+                </p>
+              </div>
             )}
           </TabsContent>
         </Tabs>

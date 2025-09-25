@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { VoiceEnabledImageDisplay } from './VoiceEnabledImageDisplay'
+import { PatientImagingResults } from './PatientImagingResults'
 import { apiConfig, apiCall } from '@/config/api'
 
 
@@ -49,6 +50,20 @@ interface Patient {
   }
   avatar_url: string
   created_at: string
+  age?: number
+  riskLevel?: "High" | "Moderate" | "Low"
+  riskScore?: {
+    stones: number
+    recurrence: number
+  }
+  imaging?: Array<{
+    id: string
+    type: string
+    date: string
+    findings: string[]
+    imagePath: string
+    status: "normal" | "abnormal" | "mild"
+  }>
 }
 
 interface MedicalTest {
@@ -83,10 +98,28 @@ export function EMRData({ token }: EMRDataProps) {
   const [patientImages, setPatientImages] = useState<MedicalImage[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(true)
+  const [enhancedPatients, setEnhancedPatients] = useState<Patient[]>([])
 
   useEffect(() => {
     fetchPatients()
   }, [token])
+
+  // REM: Enhance patients with imaging data and risk assessment
+  useEffect(() => {
+    if (patients.length > 0) {
+      const enhanced = patients.map(patient => ({
+        ...patient,
+        age: calculateAge(patient.date_of_birth),
+        riskLevel: generateRiskLevel(),
+        riskScore: {
+          stones: Math.floor(Math.random() * 80) + 20,
+          recurrence: Math.floor(Math.random() * 60) + 15
+        },
+        imaging: []
+      }))
+      setEnhancedPatients(enhanced)
+    }
+  }, [patients])
 
   const fetchPatients = async () => {
     try {
@@ -138,6 +171,23 @@ export function EMRData({ token }: EMRDataProps) {
     }
     
     return age
+  }
+
+  // REM: Generate random risk level for demonstration
+  const generateRiskLevel = (): "High" | "Moderate" | "Low" => {
+    const rand = Math.random()
+    if (rand < 0.2) return "High"
+    if (rand < 0.6) return "Moderate"
+    return "Low"
+  }
+
+  // REM: Handle patient selection for imaging results
+  const handlePatientSelectForImaging = (patientId: string) => {
+    const patient = enhancedPatients.find(p => p.id === patientId)
+    if (patient) {
+      setSelectedPatient(patient)
+      fetchPatientDetails(patientId)
+    }
   }
 
   if (loading) {
@@ -232,10 +282,11 @@ export function EMRData({ token }: EMRDataProps) {
       <div className="md:col-span-2">
         {selectedPatient ? (
           <Tabs defaultValue="demographics" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="demographics">Demographics</TabsTrigger>
               <TabsTrigger value="tests">Medical Tests</TabsTrigger>
               <TabsTrigger value="imaging">Medical Imaging</TabsTrigger>
+              <TabsTrigger value="enhanced-imaging">Enhanced Imaging Results</TabsTrigger>
             </TabsList>
 
             <TabsContent value="demographics" className="space-y-4">
@@ -443,6 +494,28 @@ export function EMRData({ token }: EMRDataProps) {
                   </div>
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            <TabsContent value="enhanced-imaging" className="space-y-4">
+              {enhancedPatients.length > 0 ? (
+                <PatientImagingResults
+                  patients={enhancedPatients}
+                  onPatientSelect={handlePatientSelectForImaging}
+                  selectedPatientId={selectedPatient?.id}
+                />
+              ) : (
+                <Card className="bg-blue-500/10 border border-blue-500/20">
+                  <CardContent className="flex items-center justify-center h-96">
+                    <div className="text-center text-muted-foreground">
+                      <ImageIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <h3 className="text-xl font-semibold text-white mb-2">Loading Enhanced Imaging Results</h3>
+                      <p className="text-gray-400">
+                        Preparing comprehensive patient imaging analysis system...
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
           </Tabs>
         ) : (

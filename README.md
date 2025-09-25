@@ -106,20 +106,76 @@ A comprehensive multi-agent system for kidney stone research and analysis, built
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- Rust 1.70+ installed
+### System Prerequisites
+
+Before installation, ensure you have the following system dependencies installed:
+
+**Ubuntu/Debian:**
+```bash
+sudo apt update
+sudo apt install pkg-config libssl-dev build-essential
+```
+
+**macOS:**
+```bash
+brew install pkg-config openssl
+```
+
+**Windows:**
+- Install Visual Studio Build Tools
+- Install OpenSSL (via vcpkg or pre-built binaries)
+
+### Software Prerequisites
+- Rust 1.70+ installed (install via [rustup](https://rustup.rs/))
 - Node.js 18+ and npm installed
 - Git for version control
+- SQLite 3
 
 ### Backend Setup
+
+**Install system dependencies first:**
+```bash
+# Ubuntu/Debian
+sudo apt install pkg-config libssl-dev build-essential
+
+# macOS  
+brew install pkg-config openssl
+```
+
+**Build and run backend:**
 ```bash
 cd backend
-cargo run
+cargo build --release
+cargo run --release
 ```
 The backend will:
 - Generate 1,000 synthetic patients with 2-year medical histories
 - Start the API server on port 8002
 - Initialize all mock agents and Azure ML integration
+
+**Troubleshooting Backend Build Issues:**
+
+1. **Missing pkg-config or OpenSSL:**
+   ```
+   Error: Could not find directory of OpenSSL installation
+   ```
+   **Solution:** Install system dependencies as shown above
+
+2. **Cargo build fails with linking errors:**
+   ```
+   Error: linking with `cc` failed
+   ```
+   **Solution:** Install build tools:
+   ```bash
+   sudo apt install build-essential  # Ubuntu/Debian
+   xcode-select --install            # macOS
+   ```
+
+3. **Permission denied errors:**
+   **Solution:** Ensure proper file permissions:
+   ```bash
+   chmod +x target/release/kidney-stone-ai
+   ```
 
 ### Frontend Setup
 ```bash
@@ -128,6 +184,40 @@ npm install
 npm run dev
 ```
 The frontend will be available at http://localhost:5173
+
+**Troubleshooting Frontend Issues:**
+
+1. **TypeScript configuration errors:**
+   ```
+   Error: Cannot find tsconfig.app.json
+   ```
+   **Solution:** TypeScript config files are automatically created during setup
+
+2. **Missing UI component dependencies:**
+   ```
+   Error: Cannot resolve '@radix-ui/react-*'
+   ```
+   **Solution:** Reinstall dependencies:
+   ```bash
+   rm -rf node_modules package-lock.json
+   npm install
+   ```
+
+3. **Vite import resolution errors:**
+   **Solution:** Clear Vite cache:
+   ```bash
+   rm -rf node_modules/.vite
+   npm run dev
+   ```
+
+**Medical Image Setup:**
+```bash
+# Create medical images directory structure
+mkdir -p backend/public/medical-images/kaggle/{Normal,Stone,Cyst,Tumor}
+# Add your Kaggle CT images to the appropriate directories
+```
+
+**Note:** Kaggle CT images are required for proper medical imaging functionality but may not be included in the repository.
 
 ### Demo Credentials
 - **Provider**: `dr.smith` / `provider123`

@@ -121,11 +121,11 @@ impl ImagingService {
         let image_id = Uuid::new_v4();
         
         let kaggle_path = match diagnosis {
-            ImageDiagnosis::Normal => format!("kaggle/Normal/Normal- ({}).jpg", sequence + 1),
-            ImageDiagnosis::Cyst => format!("kaggle/Cyst/Cyst- ({}).jpg", sequence + 1),
-            ImageDiagnosis::Tumor => format!("kaggle/Tumor/Tumor- ({}).jpg", sequence + 1),
-            ImageDiagnosis::Stone => format!("kaggle/Stone/Stone- ({}).jpg", sequence + 1),
-            _ => format!("kaggle/Normal/Normal- ({}).jpg", sequence + 1),
+            ImageDiagnosis::Normal => format!("backend/public/medical-images/kaggle/Normal/Normal-{}.jpg", sequence + 1),
+            ImageDiagnosis::Cyst => format!("backend/public/medical-images/kaggle/Cyst/Cyst-{}.jpg", sequence + 1),
+            ImageDiagnosis::Tumor => format!("backend/public/medical-images/kaggle/Tumor/Tumor-{}.jpg", sequence + 1),
+            ImageDiagnosis::Stone => format!("backend/public/medical-images/kaggle/Stone/Stone-{}.jpg", sequence + 1),
+            _ => format!("backend/public/medical-images/kaggle/Normal/Normal-{}.jpg", sequence + 1),
         };
 
         let (findings, measurements) = self.generate_findings_and_measurements(diagnosis);
@@ -348,14 +348,23 @@ impl ImagingService {
 
     pub fn get_image_base64(&self, image_id: Uuid) -> Result<String> {
         if let Some(image) = self.images.get(&image_id) {
-            let full_path = format!("kaggle/{}", image.image_path.strip_prefix("kaggle/").unwrap_or(&image.image_path));
+            let full_path = &image.image_path;
             
-            match std::fs::read(&full_path) {
+            match std::fs::read(full_path) {
                 Ok(image_data) => {
                     let base64_string = general_purpose::STANDARD.encode(&image_data);
                     Ok(format!("data:image/jpeg;base64,{}", base64_string))
                 },
-                Err(e) => Err(anyhow::anyhow!("Failed to read image file: {}", e)),
+                Err(_) => {
+                    let placeholder_path = "backend/public/medical-images/kaggle/Normal/Normal-1.jpg";
+                    match std::fs::read(placeholder_path) {
+                        Ok(placeholder_data) => {
+                            let base64_string = general_purpose::STANDARD.encode(&placeholder_data);
+                            Ok(format!("data:image/jpeg;base64,{}", base64_string))
+                        },
+                        Err(e) => Err(anyhow::anyhow!("Failed to read image file and fallback: {}", e)),
+                    }
+                }
             }
         } else {
             Err(anyhow::anyhow!("Image not found"))

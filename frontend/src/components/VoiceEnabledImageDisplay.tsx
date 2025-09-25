@@ -40,8 +40,14 @@ export const VoiceEnabledImageDisplay: React.FC<VoiceEnabledImageDisplayProps> =
         if (!response.ok) throw new Error('Failed to fetch image');
         const data = await response.json();
         setImageData(data.image_data);
+        
+        if (data.is_placeholder) {
+          setError('Using placeholder image - original not available');
+        }
       } catch (err) {
-        setError('Failed to load kidney image');
+        const fallbackSvg = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzc0MTUxIi8+PHRleHQgeD0iNTAlIiB5PSI0MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzlDQTNBRiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPktpZG5leSBDVCBTY2FuPC90ZXh0Pjx0ZXh0IHg9IjUwJSIgeT0iNjAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiM2QjcyODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZSBOb3QgQXZhaWxhYmxlPC90ZXh0Pjwvc3ZnPg==";
+        setImageData(fallbackSvg);
+        setError('Medical image temporarily unavailable');
       } finally {
         setLoading(false);
       }
