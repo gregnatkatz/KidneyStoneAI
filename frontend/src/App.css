@@ -1,0 +1,87 @@
+/* Custom styles for the kidney stone research platform */
+
+.kidney-stone-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.medical-card {
+  transition: all 0.2s ease-in-out;
+}
+
+.medical-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.risk-indicator {
+  position: relative;
+  overflow: hidden;
+}
+
+.risk-indicator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.risk-indicator:hover::before {
+  left: 100%;
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.medical-data-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.agent-status-indicator {
+  position: relative;
+  display: inline-block;
+}
+
+.agent-status-indicator::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #10b981;
+  border: 2px solid white;
+  animation: pulse 2s infinite;
+}
+
+.dark .agent-status-indicator::after {
+  border-color: #1f2937;
+}
+
+@media (max-width: 768px) {
+  .medical-data-grid {
+    grid-template-columns: 1fr;
+  }
+}
