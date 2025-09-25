@@ -45,6 +45,8 @@ export const apiConfig = {
 
 export const apiCall = async (url: string, options: RequestInit = {}) => {
   try {
+    const fullUrl = url.startsWith('http') ? url : `${apiConfig.baseUrl}${url}`;
+    
     let token = null
     let tokenSource = 'none'
     
@@ -84,7 +86,7 @@ export const apiCall = async (url: string, options: RequestInit = {}) => {
     }
 
     console.log('API call:', { 
-      url, 
+      url: fullUrl, 
       hasAuth: !!authHeader, 
       tokenSource,
       authType: authHeader.split(' ')[0],
@@ -92,14 +94,14 @@ export const apiCall = async (url: string, options: RequestInit = {}) => {
       userAgent: navigator.userAgent.substring(0, 50) + '...'
     })
 
-    const response = await fetch(url, {
+    const response = await fetch(fullUrl, {
       ...options,
       headers: defaultHeaders
     })
 
     if (!response.ok) {
       console.error('API call failed:', { 
-        url, 
+        url: fullUrl, 
         status: response.status, 
         statusText: response.statusText,
         authType: authHeader.split(' ')[0],
@@ -115,13 +117,13 @@ export const apiCall = async (url: string, options: RequestInit = {}) => {
         })
       }
     } else {
-      console.log('API call successful:', { url, status: response.status, tokenSource })
+      console.log('API call successful:', { url: fullUrl, status: response.status, tokenSource })
     }
 
     return response
   } catch (error) {
     console.error('API call error:', { 
-      url, 
+      url: fullUrl, 
       error: error instanceof Error ? error.message : String(error), 
       stack: error instanceof Error ? error.stack?.substring(0, 200) + '...' : 'No stack trace',
       timestamp: new Date().toISOString()
