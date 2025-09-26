@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+frontend/package-lock.json
+
+# Rust build artifacts
+backend/target/
+backend/Cargo.lock
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
+
+# Temporary files
+*.tmp
+*.temp
+*.patch
+
+# Screenshots (keep in repo for documentation)
+!screenshots/
+!*.png

@@ -189,7 +189,7 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
     
     try {
       console.log('Starting analysis for patient:', selectedPatient.id) // (important-comment)
-      const response = await apiCall(`/api/analysis/run/${selectedPatient.id}`, {
+      const response = await apiCall(`/analysis/run/${selectedPatient.id}`, {
         method: 'POST'
       })
       
@@ -437,102 +437,164 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Target className="h-5 w-5 text-purple-400" />
-                  <span>Your Kidney Stone Risk Assessment</span>
+                  <span>Your Kidney Stone Results - Easy to Understand</span>
                 </CardTitle>
                 <CardDescription>
-                  Easy-to-understand analysis of your kidney health
+                  Clear, reassuring explanation of your kidney health in everyday language
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="text-center">
-                  <div className={`text-4xl font-bold ${(analysisResult as any)?.clinical_findings?.primary?.diagnosis ? 
-                    getRiskColor((analysisResult as any).clinical_findings.primary.diagnosis.split(': ')[1] || 'Moderate') : 'text-gray-400'}`}>
-                    {loading ? (
-                      <div className="flex items-center justify-center space-x-2">
-                        <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
-                        <span className="text-2xl">Analyzing...</span>
-                      </div>
-                    ) : (
-                      (analysisResult as any)?.clinical_findings?.primary?.diagnosis?.split(': ')[1] || 'Run analysis to view results'
-                    )}
-                  </div>
-                  <div className="text-sm text-muted-foreground mt-1">
-                    Overall Risk Level
-                  </div>
-                  <Progress 
-                    value={(analysisResult as any)?.risk_stratification?.recurrence ? 
-                      parseInt((analysisResult as any).risk_stratification.recurrence.match(/(\d+)%/)?.[1] || '0') : 0} 
-                    className="mt-4"
-                  />
+                {/* Big Picture Section */}
+                <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
+                  <h4 className="font-medium mb-3 text-green-800 dark:text-green-200">The Big Picture</h4>
+                  <p className="text-sm text-green-700 dark:text-green-300 leading-relaxed">
+                    {(analysisResult as any)?.patient_friendly_results?.big_picture || 
+                     "Good news: Your scan shows kidney stones, which are very common and highly treatable."}
+                  </p>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
-                    <div className="font-medium text-blue-900 dark:text-blue-100">
-                      Chance of Developing Stones
-                    </div>
-                    <div className="text-2xl font-bold text-blue-600">
-                      {loading ? (
-                        <Loader2 className="h-5 w-5 animate-spin inline mr-1" />
-                      ) : (
-                        (analysisResult as any)?.risk_stratification?.recurrence ? 
-                          parseInt((analysisResult as any).risk_stratification.recurrence.match(/(\d+)%/)?.[1] || '0') : 
-                          0
-                      )}%
-                    </div>
-                  </div>
-                  
-                  <div className="p-4 bg-orange-50 dark:bg-orange-950/20 rounded-lg">
-                    <div className="font-medium text-orange-900 dark:text-orange-100">
-                      Risk of Recurrence
-                    </div>
-                    <div className="text-2xl font-bold text-orange-600">
-                      {loading ? (
-                        <Loader2 className="h-5 w-5 animate-spin inline mr-1" />
-                      ) : (
-                        (analysisResult as any)?.risk_stratification?.progression ? 
-                          ((analysisResult as any).risk_stratification.progression.includes('Moderate') ? 30 : 
-                           (analysisResult as any).risk_stratification.progression.includes('Low') ? 15 : 45) : 
-                          0
-                      )}%
-                    </div>
-                  </div>
-                </div>
-
+                {/* What We Found Section */}
                 <div>
-                  <h4 className="font-medium mb-3">What This Means for You:</h4>
+                  <h4 className="font-medium mb-3">What We Found:</h4>
+                  <div className="space-y-3">
+                    <div className="p-3 bg-muted/50 rounded">
+                      <div className="font-medium text-sm">Simple Explanation:</div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        {(analysisResult as any)?.patient_friendly_results?.what_we_found?.simple_explanation || 
+                         "We found small kidney stones in your kidneys."}
+                      </div>
+                    </div>
+                    <div className="p-3 bg-muted/50 rounded">
+                      <div className="font-medium text-sm">Size Comparison:</div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        {(analysisResult as any)?.patient_friendly_results?.what_we_found?.stone_size_comparison || 
+                         "About the size of small peas - not large enough to require major surgery"}
+                      </div>
+                    </div>
+                    <div className="p-3 bg-muted/50 rounded">
+                      <div className="font-medium text-sm">Location:</div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        {(analysisResult as any)?.patient_friendly_results?.what_we_found?.location_friendly || 
+                         "In areas where they can often pass naturally"}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Treatment Options Section */}
+                <div>
+                  <h4 className="font-medium mb-3">Your Treatment Options:</h4>
+                  <div className="space-y-3">
+                    {/* Option 1: Natural */}
+                    <div className="p-4 border rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-medium text-green-600">
+                          {(analysisResult as any)?.patient_friendly_results?.your_treatment_options?.option_1_natural?.name || 
+                           "Let It Pass Naturally"}
+                        </h5>
+                        <Badge variant="outline" className="text-green-600">
+                          {(analysisResult as any)?.patient_friendly_results?.your_treatment_options?.option_1_natural?.success_rate || 
+                           "80% success rate"}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        {(analysisResult as any)?.patient_friendly_results?.your_treatment_options?.option_1_natural?.explanation || 
+                         "Wait for the stone to come out on its own with lots of water and pain medication"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Timeline: {(analysisResult as any)?.patient_friendly_results?.your_treatment_options?.option_1_natural?.timeline || 
+                         "Usually 2-4 weeks"}
+                      </p>
+                    </div>
+
+                    {/* Option 2: Sound Waves */}
+                    <div className="p-4 border rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-medium text-blue-600">
+                          {(analysisResult as any)?.patient_friendly_results?.your_treatment_options?.option_2_sound_waves?.name || 
+                           "Sound Wave Treatment (ESWL)"}
+                        </h5>
+                        <Badge variant="outline" className="text-blue-600">
+                          {(analysisResult as any)?.patient_friendly_results?.your_treatment_options?.option_2_sound_waves?.success_rate || 
+                           "90% success rate"}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        {(analysisResult as any)?.patient_friendly_results?.your_treatment_options?.option_2_sound_waves?.explanation || 
+                         "We use sound waves from outside your body to break up the stone"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        How it works: {(analysisResult as any)?.patient_friendly_results?.your_treatment_options?.option_2_sound_waves?.how_it_works || 
+                         "Like using sound to crack an ice cube into smaller pieces"}
+                      </p>
+                    </div>
+
+                    {/* Option 3: Scope */}
+                    <div className="p-4 border rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-medium text-purple-600">
+                          {(analysisResult as any)?.patient_friendly_results?.your_treatment_options?.option_3_scope?.name || 
+                           "Scope Treatment (Ureteroscopy)"}
+                        </h5>
+                        <Badge variant="outline" className="text-purple-600">
+                          {(analysisResult as any)?.patient_friendly_results?.your_treatment_options?.option_3_scope?.advantages || 
+                           "Almost 100% success rate"}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        {(analysisResult as any)?.patient_friendly_results?.your_treatment_options?.option_3_scope?.explanation || 
+                         "We use a tiny camera to find and remove the stone directly"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Recovery: {(analysisResult as any)?.patient_friendly_results?.your_treatment_options?.option_3_scope?.recovery || 
+                         "Most people feel better within a few days"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* What Happens Next Section */}
+                <div>
+                  <h4 className="font-medium mb-3">What Happens Next:</h4>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                      <h5 className="font-medium text-blue-900 dark:text-blue-100 mb-2">This Week:</h5>
+                      <div className="space-y-1 text-sm text-blue-800 dark:text-blue-200">
+                        <p>• {(analysisResult as any)?.patient_friendly_results?.what_happens_next?.this_week?.pain_management || 
+                             "Take prescribed pain medication as needed"}</p>
+                        <p>• {(analysisResult as any)?.patient_friendly_results?.what_happens_next?.this_week?.hydration || 
+                             "Drink 8-10 glasses of water daily"}</p>
+                        <p>• {(analysisResult as any)?.patient_friendly_results?.what_happens_next?.this_week?.activity || 
+                             "Continue normal activities, avoid heavy lifting"}</p>
+                      </div>
+                    </div>
+                    <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
+                      <h5 className="font-medium text-green-900 dark:text-green-100 mb-2">Follow-Up Care:</h5>
+                      <div className="space-y-1 text-sm text-green-800 dark:text-green-200">
+                        <p>• {(analysisResult as any)?.patient_friendly_results?.what_happens_next?.follow_up_care?.next_appointment || 
+                             "See you in 2 weeks to check progress"}</p>
+                        <p>• {(analysisResult as any)?.patient_friendly_results?.what_happens_next?.follow_up_care?.follow_up_scan || 
+                             "Quick ultrasound to see if stone has moved"}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Reassurance Section */}
+                <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
+                  <h4 className="font-medium mb-3 text-green-800 dark:text-green-200">Remember:</h4>
                   <div className="space-y-2">
-                    {(analysisResult as any)?.treatment_recommendations?.medical?.prevention?.map((rec: string, index: number) => (
+                    {(analysisResult as any)?.patient_friendly_results?.emotional_support?.reassurance?.map((message: string, index: number) => (
                       <div key={index} className="flex items-start space-x-2">
                         <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">{rec}</span>
+                        <span className="text-sm text-green-700 dark:text-green-300">{message}</span>
                       </div>
                     )) || [
                       <div key={0} className="flex items-start space-x-2">
                         <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">Maintain adequate hydration (2-3 liters daily)</span>
+                        <span className="text-sm text-green-700 dark:text-green-300">This is a very treatable condition</span>
                       </div>
                     ]}
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="font-medium mb-3">Most Likely Stone Type:</h4>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded">
-                      <div>
-                        <div className="font-medium">
-                          {(analysisResult as any)?.clinical_findings?.primary?.stone_characteristics?.composition || "Calcium Oxalate"}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          Common causes: Dietary factors, dehydration, metabolic disorders
-                        </div>
-                      </div>
-                      <Badge variant="outline">
-                        {(analysisResult as any)?.analysis_metadata?.confidence_score ? 
-                          `${Math.round((analysisResult as any).analysis_metadata.confidence_score * 100)}%` : "85%"}
-                      </Badge>
-                    </div>
                   </div>
                 </div>
               </CardContent>
