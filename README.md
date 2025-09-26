@@ -31,7 +31,27 @@ A comprehensive multi-agent system for kidney stone research and analysis, built
 - Treatment Recommendations: ✅ Success rates, complications, contraindications for each modality
 - Follow-up Protocols: ✅ Milestone-based care with specific dates and emergency criteria
 
-![Enhanced Dashboard with Interactive Charts](https://app.devin.ai/attachments/c0d14677-66f4-4258-8d99-41072057487e/localhost_5173_145205.png)
+## 📸 Application Screenshots
+
+### Enhanced Dashboard with Interactive Analytics
+![Enhanced Dashboard](screenshots/enhanced_dashboard.png)
+*Comprehensive dashboard showing 1,000 patients, 96.8% model accuracy, 3,000 medical images, and interactive charts for kidney condition distribution, risk levels, age groups, and gender demographics.*
+
+### Testing Interface - Patient Selection
+![Testing Interface Selection](screenshots/testing_interface_selection.png)
+*Patient selection interface with comprehensive demographics, search functionality, and CT imaging studies panel ready for multi-agent analysis.*
+
+### Patient-Friendly Results - Clear Communication
+![Patient-Friendly Results](screenshots/patient_friendly_detailed.png)
+*Enhanced patient-friendly communication template showing "The Big Picture", "What We Found", treatment options with success rates, and clear next steps using everyday language instead of medical jargon.*
+
+### Clinical Results - Comprehensive Medical Analysis
+![Clinical Results](screenshots/clinical_results.png)
+*Detailed clinical analysis with comprehensive medical framework including precise measurements (8.5mm calcium oxalate stones), anatomical landmarks, risk stratification (100% recurrence probability), and detailed treatment protocols.*
+
+### Enhanced Analysis Results Display
+![Clinical Results Detailed](screenshots/clinical_results_detailed.png)
+*Professional clinical findings showing stone characteristics, risk stratification, treatment recommendations with success rates, complications, and contraindications for each modality (conservative, ESWL, URS, PCNL).*
 
 ## 🚀 Live Demo
 
