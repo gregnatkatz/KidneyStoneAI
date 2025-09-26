@@ -1,0 +1,224 @@
+{
+  "test_patients": [
+    {
+      "id": "test-high-risk-1",
+      "name": "Robert Chen",
+      "age": 58,
+      "gender": "Male",
+      "riskLevel": "High",
+      "riskScore": { "stones": 85, "recurrence": 70 },
+      "scenario": "Multiple bilateral stones >6mm",
+      "expected_findings": ["Large calcium oxalate stones", "Bilateral hydronephrosis", "Moderate obstruction"],
+      "expected_treatment": "Immediate urological intervention"
+    },
+    {
+      "id": "test-high-risk-2", 
+      "name": "Maria Rodriguez",
+      "age": 45,
+      "gender": "Female",
+      "riskLevel": "High",
+      "riskScore": { "stones": 78, "recurrence": 65 },
+      "scenario": "Complex stone compositions with metabolic disorders",
+      "expected_findings": ["Mixed composition stones", "Metabolic acidosis", "Recurrent episodes"],
+      "expected_treatment": "Comprehensive metabolic evaluation"
+    },
+    {
+      "id": "test-high-risk-3",
+      "name": "James Wilson", 
+      "age": 62,
+      "gender": "Male",
+      "riskLevel": "High",
+      "riskScore": { "stones": 82, "recurrence": 75 },
+      "scenario": "Recurrent stone former with complications",
+      "expected_findings": ["Staghorn calculi", "Chronic kidney disease", "UTI complications"],
+      "expected_treatment": "PCNL with antibiotic prophylaxis"
+    },
+    {
+      "id": "test-high-risk-4",
+      "name": "Linda Thompson",
+      "age": 51,
+      "gender": "Female", 
+      "riskLevel": "High",
+      "riskScore": { "stones": 88, "recurrence": 80 },
+      "scenario": "Genetic predisposition with family history",
+      "expected_findings": ["Cystine stones", "Family history positive", "Early onset"],
+      "expected_treatment": "Genetic counseling and specialized diet"
+    },
+    {
+      "id": "test-high-risk-5",
+      "name": "David Kim",
+      "age": 39,
+      "gender": "Male",
+      "riskLevel": "High", 
+      "riskScore": { "stones": 90, "recurrence": 85 },
+      "scenario": "Young patient with severe metabolic abnormalities",
+      "expected_findings": ["Hyperoxaluria", "Hypercalciuria", "Multiple small stones"],
+      "expected_treatment": "Intensive medical management"
+    },
+    {
+      "id": "test-moderate-risk-1",
+      "name": "Sarah Johnson",
+      "age": 42,
+      "gender": "Female",
+      "riskLevel": "Moderate",
+      "riskScore": { "stones": 55, "recurrence": 40 },
+      "scenario": "Single stone 4-8mm first-time presentation",
+      "expected_findings": ["6mm calcium oxalate stone", "Mild hydronephrosis", "No complications"],
+      "expected_treatment": "Conservative management with monitoring"
+    },
+    {
+      "id": "test-moderate-risk-2",
+      "name": "Michael Brown",
+      "age": 48,
+      "gender": "Male",
+      "riskLevel": "Moderate",
+      "riskScore": { "stones": 62, "recurrence": 45 },
+      "scenario": "Mixed findings with dietary factors",
+      "expected_findings": ["Uric acid stones", "High protein diet", "Dehydration"],
+      "expected_treatment": "Dietary modification and hydration"
+    },
+    {
+      "id": "test-moderate-risk-3",
+      "name": "Jennifer Davis",
+      "age": 36,
+      "gender": "Female",
+      "riskLevel": "Moderate",
+      "riskScore": { "stones": 58, "recurrence": 35 },
+      "scenario": "Pregnancy-related stone formation",
+      "expected_findings": ["Physiological hydronephrosis", "Calcium phosphate", "Hormonal changes"],
+      "expected_treatment": "Conservative management during pregnancy"
+    },
+    {
+      "id": "test-moderate-risk-4",
+      "name": "Thomas Anderson",
+      "age": 54,
+      "gender": "Male",
+      "riskLevel": "Moderate",
+      "riskScore": { "stones": 65, "recurrence": 50 },
+      "scenario": "Occupational risk factors",
+      "expected_findings": ["Dehydration-related", "Hot climate exposure", "Calcium oxalate"],
+      "expected_treatment": "Occupational health modifications"
+    },
+    {
+      "id": "test-moderate-risk-5",
+      "name": "Lisa Garcia",
+      "age": 41,
+      "gender": "Female",
+      "riskLevel": "Moderate",
+      "riskScore": { "stones": 60, "recurrence": 42 },
+      "scenario": "Medication-induced stone formation",
+      "expected_findings": ["Drug-induced crystalluria", "Topiramate use", "Calcium phosphate"],
+      "expected_treatment": "Medication review and substitution"
+    },
+    {
+      "id": "test-moderate-risk-6",
+      "name": "Kevin Martinez",
+      "age": 33,
+      "gender": "Male",
+      "riskLevel": "Moderate",
+      "riskScore": { "stones": 52, "recurrence": 38 },
+      "scenario": "Athletic lifestyle with inadequate hydration",
+      "expected_findings": ["Exercise-induced dehydration", "Concentrated urine", "Small stones"],
+      "expected_treatment": "Sports medicine consultation"
+    },
+    {
+      "id": "test-moderate-risk-7",
+      "name": "Amanda White",
+      "age": 29,
+      "gender": "Female",
+      "riskLevel": "Moderate",
+      "riskScore": { "stones": 48, "recurrence": 32 },
+      "scenario": "Inflammatory bowel disease complications",
+      "expected_findings": ["Enteric hyperoxaluria", "Crohn's disease", "Calcium oxalate"],
+      "expected_treatment": "Gastroenterology coordination"
+    },
+    {
+      "id": "test-low-risk-1",
+      "name": "Emily Taylor",
+      "age": 28,
+      "gender": "Female",
+      "riskLevel": "Low",
+      "riskScore": { "stones": 25, "recurrence": 15 },
+      "scenario": "Small stones <4mm asymptomatic",
+      "expected_findings": ["2mm calcium oxalate", "No obstruction", "Incidental finding"],
+      "expected_treatment": "Observation and prevention"
+    },
+    {
+      "id": "test-low-risk-2",
+      "name": "Christopher Lee",
+      "age": 35,
+      "gender": "Male",
+      "riskLevel": "Low",
+      "riskScore": { "stones": 30, "recurrence": 20 },
+      "scenario": "Preventive care with family history",
+      "expected_findings": ["No current stones", "Family history", "Normal renal function"],
+      "expected_treatment": "Preventive counseling"
+    },
+    {
+      "id": "test-low-risk-3",
+      "name": "Rachel Green",
+      "age": 26,
+      "gender": "Female",
+      "riskLevel": "Low",
+      "riskScore": { "stones": 22, "recurrence": 12 },
+      "scenario": "Young healthy patient routine screening",
+      "expected_findings": ["Normal kidneys", "Excellent hydration", "No risk factors"],
+      "expected_treatment": "Continue healthy lifestyle"
+    },
+    {
+      "id": "test-low-risk-4",
+      "name": "Daniel Miller",
+      "age": 31,
+      "gender": "Male",
+      "riskLevel": "Low",
+      "riskScore": { "stones": 28, "recurrence": 18 },
+      "scenario": "Post-treatment follow-up success",
+      "expected_findings": ["Previous stone passed", "No residual fragments", "Good compliance"],
+      "expected_treatment": "Annual monitoring"
+    },
+    {
+      "id": "test-low-risk-5",
+      "name": "Jessica Adams",
+      "age": 24,
+      "gender": "Female",
+      "riskLevel": "Low",
+      "riskScore": { "stones": 20, "recurrence": 10 },
+      "scenario": "Excellent preventive measures",
+      "expected_findings": ["Optimal hydration", "Balanced diet", "No metabolic issues"],
+      "expected_treatment": "Continue current regimen"
+    },
+    {
+      "id": "test-edge-case-1",
+      "name": "Robert Senior",
+      "age": 78,
+      "gender": "Male",
+      "riskLevel": "High",
+      "riskScore": { "stones": 70, "recurrence": 55 },
+      "scenario": "Elderly patient with comorbidities",
+      "expected_findings": ["Multiple comorbidities", "Reduced GFR", "Complex management"],
+      "expected_treatment": "Multidisciplinary approach"
+    },
+    {
+      "id": "test-edge-case-2",
+      "name": "Sophie Young",
+      "age": 16,
+      "gender": "Female",
+      "riskLevel": "Moderate",
+      "riskScore": { "stones": 45, "recurrence": 25 },
+      "scenario": "Pediatric presentation unusual composition",
+      "expected_findings": ["Rare stone type", "Genetic testing needed", "Pediatric considerations"],
+      "expected_treatment": "Pediatric urology referral"
+    },
+    {
+      "id": "test-edge-case-3",
+      "name": "Alex Incomplete",
+      "age": 40,
+      "gender": "Non-binary",
+      "riskLevel": "Low",
+      "riskScore": { "stones": 35, "recurrence": 25 },
+      "scenario": "Incomplete imaging data and conflicting AI outputs",
+      "expected_findings": ["Limited image quality", "AI disagreement", "Need additional studies"],
+      "expected_treatment": "Repeat imaging recommended"
+    }
+  ]
+}

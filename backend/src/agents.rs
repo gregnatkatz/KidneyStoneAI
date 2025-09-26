@@ -280,7 +280,7 @@ impl AgentCoordinator {
     
     async fn coordinate_analysis(&self, medparse: &[String], gpt5: &str, deepseek: &[PatternMatch]) -> Result<String> {
         Ok(format!(
-            "Multi-agent analysis completed. MedParse identified {} key findings, GPT-5 provided comprehensive risk assessment, and DeepSeek detected {} significant patterns. Coordination confidence: 0.89",
+            "Comprehensive clinical analysis completed. Advanced imaging analysis identified {} key findings, clinical risk assessment provided comprehensive evaluation, and pattern recognition analysis detected {} significant patterns. Analysis confidence: 0.89",
             medparse.len(),
             deepseek.len()
         ))
@@ -516,7 +516,7 @@ impl MedParseAgent {
     async fn extract_comprehensive_findings(&self, patient: &Patient, tests: &[MedicalTest], images: &[MedicalImage]) -> Result<Vec<String>> {
         let mut findings = vec![];
         
-        findings.push("=== MEDPARSE 3D COMPREHENSIVE IMAGING ANALYSIS ===".to_string());
+        findings.push("=== COMPREHENSIVE MEDICAL IMAGING ANALYSIS ===".to_string());
         findings.push(format!("Patient: {} (Age: {}, Gender: {})", patient.full_name(), patient.age(), patient.gender));
         findings.push(format!("Analysis Date: {}", chrono::Utc::now().format("%Y-%m-%d %H:%M UTC")));
         findings.push("".to_string());

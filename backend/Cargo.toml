@@ -2,6 +2,15 @@
 name = "kidney-stone-api"
 version = "0.1.0"
 edition = "2021"
+authors = ["Greg Katz <gregory.katz@microsoft.com>"]
+description = "Kidney Stone Research Platform - AI-powered medical analysis system backend"
+license = "MIT"
+repository = "https://github.com/gregnatkatz/KidneyStoneAI"
+
+# System Requirements:
+# Ubuntu/Debian: sudo apt install pkg-config libssl-dev build-essential
+# macOS: brew install pkg-config openssl  
+# Windows: Install Visual Studio Build Tools and OpenSSL
 
 [dependencies]
 tokio = { version = "1.35", features = ["full"] }
@@ -26,3 +35,20 @@ azure_identity = "0.19"
 image = "0.24"
 imageproc = "0.23"
 base64 = "0.21"
+
+[build-dependencies]
+# Required for OpenSSL linking on some systems
+pkg-config = "0.3"
+
+[profile.release]
+# Optimized release build for production deployment
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[profile.dev]
+# Development profile with faster compilation
+opt-level = 0
+debug = true
+overflow-checks = true

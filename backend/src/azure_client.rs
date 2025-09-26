@@ -75,7 +75,7 @@ impl AzureOpenAIClient {
         let messages = vec![
             json!({
                 "role": "system",
-                "content": "You are GPT-5, an advanced medical AI specializing in kidney stone risk assessment. Provide comprehensive risk analysis, treatment recommendations, and clinical insights based on patient data and extracted medical information."
+                "content": "You are an advanced clinical decision support system specializing in kidney stone risk assessment. Provide comprehensive risk analysis, treatment recommendations, and clinical insights based on patient data and extracted medical information."
             }),
             json!({
                 "role": "user",
@@ -90,7 +90,7 @@ impl AzureOpenAIClient {
         let messages = vec![
             json!({
                 "role": "system", 
-                "content": "You are DeepSeek, an advanced pattern recognition AI for medical analysis. Identify complex patterns, correlations, and insights in kidney stone cases that other systems might miss. Focus on temporal patterns, metabolic indicators, and predictive factors."
+                "content": "You are an advanced pattern recognition system for medical analysis. Identify complex patterns, correlations, and insights in kidney stone cases that other systems might miss. Focus on temporal patterns, metabolic indicators, and predictive factors."
             }),
             json!({
                 "role": "user",
