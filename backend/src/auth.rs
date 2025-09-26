@@ -2,6 +2,15 @@ use anyhow::Result;
 use bcrypt::{hash, verify, DEFAULT_COST};
 use chrono::{DateTime, Duration, Utc};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, TokenData, Validation};
+/**
+ * Kidney Stone Research Platform - Authentication System
+ * Developed by Gregory Katz (@gregorykatz_microsoft)
+ * 
+ * Purpose: User authentication and authorization for medical professionals
+ * Dependencies: Serde, HashMap for user management
+ * Last Updated: September 26, 2025
+ */
+
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use uuid::Uuid;

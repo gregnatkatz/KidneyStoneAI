@@ -1,3 +1,13 @@
+/**
+ * Kidney Stone Research Platform - Medical Imaging System
+ * Developed by Gregory Katz (@gregorykatz_microsoft)
+ * 
+ * Purpose: Handles CT scan processing, image serving, and medical imaging analysis
+ * Dependencies: Serde, std::path for file operations
+ * Last Updated: September 26, 2025
+ */
+
+
 use anyhow::Result;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};

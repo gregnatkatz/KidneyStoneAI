@@ -1,3 +1,12 @@
+/**
+ * Kidney Stone Research Platform - Multi-Agent System
+ * Developed by Gregory Katz (@gregorykatz_microsoft)
+ * 
+ * Purpose: Coordinates MedParse, GPT-5, and DeepSeek agents for clinical analysis
+ * Dependencies: Serde, Azure OpenAI
+ * Last Updated: September 26, 2025
+ */
+
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use uuid::Uuid;

@@ -1,3 +1,13 @@
+/**
+ * Kidney Stone Research Platform - Database Layer
+ * Developed by Gregory Katz (@gregorykatz_microsoft)
+ * 
+ * Purpose: In-memory database with star schema for patient data and medical records
+ * Dependencies: Serde JSON, HashMap collections
+ * Last Updated: September 26, 2025
+ */
+
+
 use anyhow::Result;
 use chrono::{DateTime, Utc, Duration, TimeZone, Datelike};
 use fake::{Fake, Faker};

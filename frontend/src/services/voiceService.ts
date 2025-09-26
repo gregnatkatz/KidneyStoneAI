@@ -1,5 +1,15 @@
 /**
  * Kidney Stone Research Platform - Voice Service
+ * Developed by Gregory Katz (@gregorykatz_microsoft)
+ * 
+ * Purpose: Azure AI Speech integration for voice-activated CT scan analysis
+ * Dependencies: Azure Speech SDK, Web Audio API
+ * Last Updated: September 26, 2025
+ */
+
+
+/**
+ * Kidney Stone Research Platform - Voice Service
  * Developed by Greg Katz
  * 
  * Purpose: Voice recognition and text-to-speech service for medical interface

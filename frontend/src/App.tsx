@@ -1,3 +1,13 @@
+/**
+ * Kidney Stone Research Platform - Main Application Component
+ * Developed by Gregory Katz (@gregorykatz_microsoft)
+ * 
+ * Purpose: Root component with tabbed interface for Dashboard, EMR Data, and Testing Interface
+ * Dependencies: React, Tailwind CSS, custom UI components
+ * Last Updated: September 26, 2025
+ */
+
+
 import { useState, useEffect } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ThemeProvider } from '@/components/theme-provider'

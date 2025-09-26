@@ -1,3 +1,13 @@
+/**
+ * Kidney Stone Research Platform - ML Models
+ * Developed by Gregory Katz (@gregorykatz_microsoft)
+ * 
+ * Purpose: Machine learning models for stone detection, risk prediction, and composition analysis
+ * Dependencies: Serde, Azure ML endpoints
+ * Last Updated: September 26, 2025
+ */
+
+
 use anyhow::Result;
 use chrono::{DateTime, Utc};
 use rand::Rng;

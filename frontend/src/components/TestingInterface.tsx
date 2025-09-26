@@ -1,3 +1,13 @@
+/**
+ * Kidney Stone Research Platform - Testing Interface Component
+ * Developed by Gregory Katz (@gregorykatz_microsoft)
+ * 
+ * Purpose: Multi-agent analysis interface with patient selection and clinical results
+ * Dependencies: React, UI components, API client
+ * Last Updated: September 26, 2025
+ */
+
+
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
