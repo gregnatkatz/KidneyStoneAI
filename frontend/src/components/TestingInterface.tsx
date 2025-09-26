@@ -434,16 +434,16 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
 
           <TabsContent value="laymen" className="space-y-6">
             <Card className="bg-gradient-to-br from-purple-500/20 to-purple-600/10 border-purple-500/30 hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
+              <CardHeader className="text-left">
+                <CardTitle className="flex items-center space-x-2 text-left">
                   <Target className="h-5 w-5 text-purple-400" />
                   <span>Your Kidney Stone Results - Easy to Understand</span>
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-left">
                   Clear, reassuring explanation of your kidney health in everyday language
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-6 text-left">
                 {/* Big Picture Section */}
                 <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
                   <h4 className="font-medium mb-3 text-green-800 dark:text-green-200">The Big Picture</h4>
