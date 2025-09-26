@@ -44,9 +44,9 @@ export const apiConfig = {
 }
 
 export const apiCall = async (url: string, options: RequestInit = {}) => {
+  const fullUrl = url.startsWith('http') ? url : `${apiConfig.baseUrl}${url}`;
+  
   try {
-    const fullUrl = url.startsWith('http') ? url : `${apiConfig.baseUrl}${url}`;
-    
     let token = null
     let tokenSource = 'none'
     

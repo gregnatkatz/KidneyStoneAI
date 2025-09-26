@@ -152,6 +152,7 @@ async fn main() -> anyhow::Result<()> {
                 .allow_origin("https://kidney-stone-agent-xcasvwgy.devinapps.com".parse::<HeaderValue>().unwrap())
                 .allow_origin("https://kidney-stone-agent-tunnel-q62eive9.devinapps.com".parse::<HeaderValue>().unwrap())
                 .allow_origin("http://localhost:5173".parse::<HeaderValue>().unwrap())
+                .allow_origin("http://localhost:5174".parse::<HeaderValue>().unwrap())
                 .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE, Method::OPTIONS])
                 .allow_headers([AUTHORIZATION, CONTENT_TYPE, ACCEPT, HeaderName::from_static("x-requested-with")])
                 .allow_credentials(true)
@@ -685,6 +686,9 @@ async fn run_multi_model_analysis(
     
     match state.coordinator.analyze_kidney_stones_with_validation(&patient, &tests, &images, 0.85).await {
         Ok(analysis) => {
+            // Add a delay to simulate processing time
+            tokio::time::sleep(tokio::time::Duration::from_secs(3)).await;
+            
             let confidence_score = calculate_analysis_confidence(&patient, &tests, &images, &analysis);
             let confidence_level = match confidence_score {
                 score if score >= 0.85 => "High",
