@@ -2,9 +2,10 @@
 
 A comprehensive multi-agent system for kidney stone research and analysis, built with Rust backend and React frontend, featuring Azure ML Studio integration and voice-activated CT image description using Azure AI Speech.
 
+**⚠️ Important Note**: This application uses synthetic test data from Kaggle medical imaging datasets. No real patient data or HIPAA-protected information is used. All patient records, medical images, and clinical data are simulated for research and demonstration purposes only.
+
 ## ✅ Latest Update - Testing Interface Fully Operational (September 26, 2025)
-**Development by**: Greg Katz (@gregorykatz_microsoft)  
-**Devin Session**: https://app.devin.ai/sessions/027f741d90ec489dbbc03a10fa64402a
+**Development by**: Greg Katz (@gregorykatz_microsoft)
 
 **✅ Testing Interface Multi-Agent Analysis Completely Enhanced:**
 - ✅ **Analysis functionality working perfectly** - No longer completes in 1 second with placeholder results
@@ -80,7 +81,7 @@ A comprehensive multi-agent system for kidney stone research and analysis, built
 - **Hands-free Operation**: Voice-activated CT scan analysis for healthcare providers
 - **Real Kaggle Images**: Authentic kidney CT scans with voice narration capabilities
 
-![Voice-Enabled Medical Imaging](https://app.devin.ai/attachments/e28a2392-7147-4a5c-b2d1-71e21d075e90/localhost_5173_145226.png)
+![Voice-Enabled Medical Imaging](screenshots/enhanced_dashboard.png)
 
 ### 🏥 EMR Data & Demographics
 - **Patient Directory**: Searchable database of 1,000 patients
@@ -99,23 +100,23 @@ A comprehensive multi-agent system for kidney stone research and analysis, built
 ## 📸 Platform Screenshots
 
 ### Overall Dashboard - Clinical Statistics
-![Dashboard](https://app.devin.ai/attachments/c0d14677-66f4-4258-8d99-41072057487e/localhost_5173_145205.png)
+![Dashboard](screenshots/enhanced_dashboard.png)
 *Comprehensive clinical statistics, condition distribution, and multi-agent performance metrics with 96.8% accuracy*
 
 ### EMR Data & Demographics - Patient Directory
-![EMR Directory](https://app.devin.ai/attachments/e28a2392-7147-4a5c-b2d1-71e21d075e90/localhost_5173_145226.png)
+![EMR Directory](screenshots/testing_interface_selection.png)
 *Patient directory with search functionality and detailed medical records for 1,000 synthetic patients*
 
 ### Testing Interface - Patient Selection & CT Imaging
-![Testing Interface](https://app.devin.ai/attachments/1f50f133-b3ad-4bd9-8829-ca5434204daf/localhost_5173_145250.png)
+![Testing Interface](screenshots/testing_interface_selection.png)
 *Patient selection interface with CT imaging studies integration and multi-agent analysis workflow*
 
 ### Multi-Agent Analysis - Patient-Friendly Results
-![Patient Results](https://app.devin.ai/attachments/90561fce-a97d-49b7-ba1e-b9b64117dc13/localhost_5173_145348.png)
+![Patient Results](screenshots/patient_friendly_detailed.png)
 *Risk assessment with easy-to-understand recommendations showing 80% stone development chance and 90% recurrence risk*
 
 ### Multi-Agent Analysis - Clinical Results
-![Clinical Results](https://app.devin.ai/attachments/d766bb7d-6daf-4464-a242-26a220268904/localhost_5173_145411.png)
+![Clinical Results](screenshots/clinical_results_detailed.png)
 *Consolidated multi-agent clinical analysis from MedParse 3D, GPT-5, and DeepSeek with 85% confidence scoring*
 
 ### 🧪 Testing Interface (Real Azure Integration)
