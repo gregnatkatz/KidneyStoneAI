@@ -106,7 +106,7 @@ impl ImagingService {
         let mut images = Vec::new();
         let diagnosis = self.map_condition_to_diagnosis(condition_type);
         
-        let image_count = if matches!(diagnosis, ImageDiagnosis::Normal) { 1 } else { 1 + (rand::random::<usize>() % 2) };
+        let image_count = 1;
         
         for i in 0..image_count {
             let image = self.create_medical_image(patient_id, &diagnosis, i).await?;

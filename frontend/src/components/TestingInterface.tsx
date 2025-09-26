@@ -185,17 +185,29 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
     if (!selectedPatient) return
 
     setLoading(true)
+    setAnalysisResult(null) // Reset previous results
+    
     try {
+      console.log('Starting analysis for patient:', selectedPatient.id) // (important-comment)
       const response = await apiCall(`/api/analysis/run/${selectedPatient.id}`, {
         method: 'POST'
       })
       
+      console.log('Analysis API response status:', response.status) // (important-comment)
+      console.log('Analysis API response headers:', Object.fromEntries(response.headers.entries())) // (important-comment)
+      
       if (response.ok) {
         const result = await response.json()
+        console.log('Analysis result received:', result) // (important-comment)
         setAnalysisResult(result)
         
         // Fetch patient images after analysis completes (important-comment)
         await fetchPatientImages(selectedPatient.id)
+        
+        console.log('Analysis completed successfully:', result) // (important-comment)
+      } else {
+        const errorText = await response.text()
+        console.error('Analysis failed:', response.status, errorText) // (important-comment)
       }
     } catch (error) {
       console.error('Failed to run analysis:', error)
@@ -207,9 +219,14 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
   // REM: Fetch patient images when selected (important-comment)
   const fetchPatientImages = async (patientId: string) => {
     try {
+      console.log('Fetching patient images for:', patientId) // (important-comment)
       const response = await apiCall(`/api/patients/${patientId}/imaging`)
+      console.log('Patient images API response status:', response.status) // (important-comment)
+      
       if (response.ok) {
         const imagingData = await response.json()
+        console.log('Patient imaging data received:', imagingData) // (important-comment)
+        
         // REM: Update patient with imaging data for display (important-comment)
         setSelectedPatient(prev => prev ? {
           ...prev,
@@ -217,6 +234,9 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
           riskLevel: prev.riskLevel || "Moderate",
           riskScore: prev.riskScore || { stones: 45, recurrence: 30 }
         } : null)
+      } else {
+        const errorText = await response.text()
+        console.error('Failed to fetch patient images:', response.status, errorText) // (important-comment)
       }
     } catch (error) {
       console.error('Failed to fetch patient images:', error)
@@ -284,7 +304,11 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
                   <Button
                     key={patient.id}
                     variant={selectedPatient?.id === patient.id ? "default" : "ghost"}
-                    className="w-full justify-start h-auto p-3"
+                    className={`w-full justify-start h-auto p-3 ${
+                      selectedPatient?.id === patient.id 
+                        ? "bg-blue-600/20 border border-blue-500/50 shadow-md" 
+                        : "hover:bg-blue-500/10"
+                    }`}
                     onClick={() => {
                       setSelectedPatient(patient)
                       // REM: Trigger image loading for selected patient
@@ -375,7 +399,12 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
                   </div>
                 ) : (
                   <div className="text-left text-muted-foreground">
-                    {analysisResult ? 
+                    {loading ? (
+                      <div className="flex items-center space-x-2 py-4">
+                        <Loader2 className="h-5 w-5 animate-spin text-green-400" />
+                        <span>Analyzing patient data and retrieving CT images...</span>
+                      </div>
+                    ) : analysisResult ? 
                       "No imaging studies available for this patient" : 
                       `CT images for ${selectedPatient.first_name} ${selectedPatient.last_name} will be displayed here when analysis is run`
                     }
@@ -417,7 +446,14 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
               <CardContent className="space-y-6">
                 <div className="text-center">
                   <div className={`text-4xl font-bold ${analysisResult?.risk_prediction?.risk_level ? getRiskColor(analysisResult.risk_prediction.risk_level) : 'text-gray-400'}`}>
-                    {analysisResult?.risk_prediction?.risk_level || 'Analyzing...'}
+                    {loading ? (
+                      <div className="flex items-center justify-center space-x-2">
+                        <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
+                        <span className="text-2xl">Analyzing...</span>
+                      </div>
+                    ) : (
+                      analysisResult?.risk_prediction?.risk_level || 'Run analysis to view results'
+                    )}
                   </div>
                   <div className="text-sm text-muted-foreground mt-1">
                     Overall Risk Level
@@ -434,7 +470,13 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
                       Chance of Developing Stones
                     </div>
                     <div className="text-2xl font-bold text-blue-600">
-                      {analysisResult?.risk_prediction?.stone_formation_probability ? Math.round(analysisResult.risk_prediction.stone_formation_probability * 100) : 0}%
+                      {loading ? (
+                        <Loader2 className="h-5 w-5 animate-spin inline mr-1" />
+                      ) : (
+                        analysisResult?.risk_prediction?.stone_formation_probability 
+                          ? Math.round(analysisResult.risk_prediction.stone_formation_probability * 100) 
+                          : 0
+                      )}%
                     </div>
                   </div>
                   
@@ -443,7 +485,13 @@ export function TestingInterface({ token }: TestingInterfaceProps) {
                       Risk of Recurrence
                     </div>
                     <div className="text-2xl font-bold text-orange-600">
-                      {analysisResult?.risk_prediction?.recurrence_risk ? Math.round(analysisResult.risk_prediction.recurrence_risk * 100) : 0}%
+                      {loading ? (
+                        <Loader2 className="h-5 w-5 animate-spin inline mr-1" />
+                      ) : (
+                        analysisResult?.risk_prediction?.recurrence_risk 
+                          ? Math.round(analysisResult.risk_prediction.recurrence_risk * 100) 
+                          : 0
+                      )}%
                     </div>
                   </div>
                 </div>
