@@ -1,3 +1,13 @@
+/**
+ * Kidney Stone Research Platform - Azure OpenAI Client
+ * Developed by Gregory Katz (@gregorykatz_microsoft)
+ * 
+ * Purpose: Azure OpenAI integration for GPT-5 and DeepSeek model coordination
+ * Dependencies: Serde, Azure OpenAI API
+ * Last Updated: September 26, 2025
+ */
+
+
 use anyhow::Result;
 use reqwest::Client;
 use serde_json::{json, Value};

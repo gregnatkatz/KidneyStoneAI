@@ -1,3 +1,13 @@
+/**
+ * Kidney Stone Research Platform - RAG Knowledge System
+ * Developed by Gregory Katz (@gregorykatz_microsoft)
+ * 
+ * Purpose: Retrieval-Augmented Generation for medical knowledge queries
+ * Dependencies: Serde, Chroma vector database
+ * Last Updated: September 26, 2025
+ */
+
+
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;

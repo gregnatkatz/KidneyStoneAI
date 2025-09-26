@@ -1,3 +1,13 @@
+/**
+ * Kidney Stone Research Platform - Voice-Enabled Image Display Component
+ * Developed by Gregory Katz (@gregorykatz_microsoft)
+ * 
+ * Purpose: Voice-activated CT scan analysis with Azure AI Speech integration
+ * Dependencies: React, UI components, Voice service
+ * Last Updated: September 26, 2025
+ */
+
+
 import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Mic, MicOff, Volume2, VolumeX } from 'lucide-react';

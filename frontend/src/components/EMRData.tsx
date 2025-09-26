@@ -1,3 +1,13 @@
+/**
+ * Kidney Stone Research Platform - EMR Data Component
+ * Developed by Gregory Katz (@gregorykatz_microsoft)
+ * 
+ * Purpose: Electronic Medical Records interface with patient directory and voice features
+ * Dependencies: React, UI components, Voice service, API client
+ * Last Updated: September 26, 2025
+ */
+
+
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'

@@ -1,5 +1,15 @@
 /**
  * Kidney Stone Research Platform - Comprehensive Test Suite
+ * Developed by Gregory Katz (@gregorykatz_microsoft)
+ * 
+ * Purpose: 20-test validation suite for comprehensive functionality testing
+ * Dependencies: Node.js, File system operations
+ * Last Updated: September 26, 2025
+ */
+
+
+/**
+ * Kidney Stone Research Platform - Comprehensive Test Suite
  * Developed by Greg Katz
  * 
  * Purpose: Execute 20 comprehensive functionality tests across all risk categories

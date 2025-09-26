@@ -1,3 +1,13 @@
+/**
+ * Kidney Stone Research Platform - Dashboard Component
+ * Developed by Gregory Katz (@gregorykatz_microsoft)
+ * 
+ * Purpose: Interactive analytics dashboard with clinical statistics and charts
+ * Dependencies: React, Recharts, UI components, API client
+ * Last Updated: September 26, 2025
+ */
+
+
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'

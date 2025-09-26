@@ -1,3 +1,13 @@
+/**
+ * Kidney Stone Research Platform - API Configuration
+ * Developed by Gregory Katz (@gregorykatz_microsoft)
+ * 
+ * Purpose: Centralized API client configuration and request handling
+ * Dependencies: Fetch API, Azure authentication
+ * Last Updated: September 26, 2025
+ */
+
+
 const parseApiUrl = (url: string) => {
   try {
     const urlObj = new URL(url);

@@ -1,4 +1,14 @@
 /**
+ * Kidney Stone Research Platform - Clinical Analysis Aggregator Component
+ * Developed by Gregory Katz (@gregorykatz_microsoft)
+ * 
+ * Purpose: Aggregates multi-model AI results into consolidated clinical findings
+ * Dependencies: React, UI components, API client
+ * Last Updated: September 26, 2025
+ */
+
+
+/**
  * Kidney Stone Research Platform - ClinicalAnalysisAggregator Component
  * Developed by Greg Katz
  * 

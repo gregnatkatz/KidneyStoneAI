@@ -1,4 +1,14 @@
 /**
+ * Kidney Stone Research Platform - Patient Imaging Results Component
+ * Developed by Gregory Katz (@gregorykatz_microsoft)
+ * 
+ * Purpose: Displays patient imaging studies with comprehensive analysis results
+ * Dependencies: React, UI components, API client
+ * Last Updated: September 26, 2025
+ */
+
+
+/**
  * Kidney Stone Research Platform - PatientImagingResults Component
  * Developed by Greg Katz
  * 

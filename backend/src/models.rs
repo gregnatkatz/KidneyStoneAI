@@ -1,3 +1,13 @@
+/**
+ * Kidney Stone Research Platform - Data Models
+ * Developed by Gregory Katz (@gregorykatz_microsoft)
+ * 
+ * Purpose: Core data structures for patients, medical tests, and analysis results
+ * Dependencies: Serde, UUID
+ * Last Updated: September 26, 2025
+ */
+
+
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use chrono::{DateTime, Utc, Datelike};

@@ -1,3 +1,13 @@
+/**
+ * Kidney Stone Research Platform - Azure ML Studio Integration
+ * Developed by Gregory Katz (@gregorykatz_microsoft)
+ * 
+ * Purpose: 5-step ML pipeline for automated machine learning workflows
+ * Dependencies: Serde, Azure ML Studio API
+ * Last Updated: September 26, 2025
+ */
+
+
 use anyhow::Result;
 use chrono::{DateTime, Utc};
 use reqwest::Client;

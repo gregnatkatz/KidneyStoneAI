@@ -1,3 +1,13 @@
+/**
+ * Kidney Stone Research Platform - Main Backend Server
+ * Developed by Gregory Katz (@gregorykatz_microsoft)
+ * 
+ * Purpose: Core API server with multi-agent analysis and Azure ML integration
+ * Dependencies: Axum, Tokio, Azure OpenAI, Serde
+ * Last Updated: September 26, 2025
+ */
+
+
 use axum::{
     extract::{Path, Query, State},
     http::{StatusCode, Method, HeaderValue},
