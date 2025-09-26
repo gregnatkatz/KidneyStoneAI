@@ -53,11 +53,6 @@ A comprehensive multi-agent system for kidney stone research and analysis, built
 ![Clinical Results Detailed](screenshots/clinical_results_detailed.png)
 *Professional clinical findings showing stone characteristics, risk stratification, treatment recommendations with success rates, complications, and contraindications for each modality (conservative, ESWL, URS, PCNL).*
 
-## 🚀 Live Demo
-
-- **Frontend**: https://kidney-stone-agent-xcasvwgy.devinapps.com
-- **Backend API**: https://user:22de4839c5c4abf36f6071034be2fd60@kidney-stone-agent-tunnel-oa5movuc.devinapps.com
-
 ## ✨ Features
 
 ### 🤖 Multi-Agent Architecture (Real Azure OpenAI Integration)
